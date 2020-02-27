@@ -10,6 +10,7 @@ public class PlayerMovement : MonoBehaviour
     public float gravityMultiplier = 8f;
     public float jumpHeight = 6f;
     public float groundedOffset = -1f;
+    public float sprintFactor = 2f;
 
     public Transform groundCheck;
     public float groundDistance = 0.4f;
@@ -18,11 +19,13 @@ public class PlayerMovement : MonoBehaviour
     Vector3 velocity;
     bool isGrounded;
     bool hasDoubleJumped = false;
+    bool holdingShift = false;
 
     // Update is called once per frame
     void Update()
     {
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+        holdingShift = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
 
         // Contact with floor.
         if (isGrounded && velocity.y < 0)
@@ -31,17 +34,25 @@ public class PlayerMovement : MonoBehaviour
             hasDoubleJumped = false;
         }
 
-        // Unity recognizes "w" as 1 and "s" as -1.
+        // Unity recognizes "a" as 1 and "d" as -1.
         float x = Input.GetAxis("Horizontal");
 
-        // Unity recognizes "a" as 1 and "d" as -1.
+        // Unity recognizes "w" as 1 and "s" as -1.
         float z = Input.GetAxis("Vertical");
 
         // Move player according to x, z input and speed.
         Vector3 horizontalMove = transform.right * x;
         Vector3 verticalMove = transform.forward * z;
         Vector3 move = horizontalMove + verticalMove;
-        controller.Move(move * speed * Time.deltaTime);
+
+        float actualSpeed = speed;
+        if (z == 1 && x == 0 && holdingShift && isGrounded)
+        {
+            Debug.Log("Activating Sprint");
+            actualSpeed *= sprintFactor;
+        }
+
+        controller.Move(move * actualSpeed * Time.deltaTime);
 
         float actualGravity = gravity * gravityMultiplier;
 

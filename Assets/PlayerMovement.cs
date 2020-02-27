@@ -7,8 +7,9 @@ public class PlayerMovement : MonoBehaviour
     public CharacterController controller;
     public float speed = 12f;
     public float gravity = -9.81f;
-    public float gravityMultiplier = 4;
-    public float jumpHeight = 3f;
+    public float gravityMultiplier = 8f;
+    public float jumpHeight = 6f;
+    public float groundedOffset = -1f;
 
     public Transform groundCheck;
     public float groundDistance = 0.4f;
@@ -24,13 +25,19 @@ public class PlayerMovement : MonoBehaviour
 
         if (isGrounded && velocity.y < 0)
         {
-            velocity.y = -2f;
+            velocity.y = groundedOffset;
         }
 
+        // Unity recognizes "w" as 1 and "s" as -1.
         float x = Input.GetAxis("Horizontal");
+
+        // Unity recognizes "a" as 1 and "d" as -1.
         float z = Input.GetAxis("Vertical");
 
-        Vector3 move = transform.right * x + transform.forward * z;
+        // Move player according to x, z input and speed.
+        Vector3 horizontalMove = transform.right * x;
+        Vector3 verticalMove = transform.forward * z;
+        Vector3 move = horizontalMove + verticalMove;
         controller.Move(move * speed * Time.deltaTime);
 
         float actualGravity = gravity * gravityMultiplier;

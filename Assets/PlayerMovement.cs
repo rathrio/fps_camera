@@ -17,15 +17,18 @@ public class PlayerMovement : MonoBehaviour
 
     Vector3 velocity;
     bool isGrounded;
+    bool hasDoubleJumped = false;
 
     // Update is called once per frame
     void Update()
     {
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
 
+        // Contact with floor.
         if (isGrounded && velocity.y < 0)
         {
             velocity.y = groundedOffset;
+            hasDoubleJumped = false;
         }
 
         // Unity recognizes "w" as 1 and "s" as -1.
@@ -42,9 +45,16 @@ public class PlayerMovement : MonoBehaviour
 
         float actualGravity = gravity * gravityMultiplier;
 
-        if (Input.GetButtonDown("Jump") && isGrounded)
+        if (Input.GetButtonDown("Jump"))
         {
-            velocity.y = Mathf.Sqrt(jumpHeight * -2f * actualGravity);
+            if (isGrounded)
+            {
+                velocity.y = Mathf.Sqrt(jumpHeight * -2f * actualGravity);
+            } else if (!hasDoubleJumped)
+            {
+                velocity.y = Mathf.Sqrt(jumpHeight * -2f * actualGravity);
+                hasDoubleJumped = true;
+            }
         }
 
         velocity.y += actualGravity * Time.deltaTime;

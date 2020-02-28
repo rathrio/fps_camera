@@ -960,6 +960,7 @@ MonoBehaviour:
   groundedOffset: -1
   sprintFactor: 2
   crouchFactor: 0.5
+  crouchSpeedFactor: 0.1
   groundCheck: {fileID: 1037452147}
   groundDistance: 0.4
   groundMask:

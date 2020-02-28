@@ -13,6 +13,7 @@ public class PlayerMovement : MonoBehaviour
     public float groundedOffset = -1f;
     public float sprintFactor = 2f;
     public float crouchFactor = 0.5f;
+    public float crouchSpeedFactor = 0.1f;
 
     public Transform groundCheck;
     public float groundDistance = 0.4f;
@@ -60,25 +61,40 @@ public class PlayerMovement : MonoBehaviour
         float z = Input.GetAxis("Vertical");
 
         float actualSpeed = speed;
-        if (z == 1 && x == 0 && holdingShift && isGrounded)
+
+        // Sprint speed
+        if (z == 1 && x == 0 && holdingShift && isGrounded && !isCrouching)
         {
             actualSpeed *= sprintFactor;
         }
+
+
+        // Crouch speed
+        if (isCrouching && isGrounded)
+        {
+            actualSpeed *= crouchSpeedFactor;
+        }
+
+        Debug.Log(actualSpeed);
+
 
         // Move player according to x, z input and speed.
         Vector3 horizontalMove = transform.right * x;
         Vector3 verticalMove = transform.forward * z;
         Vector3 move = horizontalMove + verticalMove;
-
-        controller.Move(move * actualSpeed * Time.deltaTime);
+        Vector3 motion = move * actualSpeed * Time.deltaTime;
+        Debug.Log(motion);
+        controller.Move(motion);
 
         float actualGravity = gravity * gravityMultiplier;
-        if (holdingCrouch)
+
+        // Faster crouch hack
+        if (holdingCrouch && isGrounded)
         {
-            actualGravity *= 10;
+            actualGravity *= 20;
         }
 
-        if (Input.GetButtonDown("Jump"))
+        if (!holdingCrouch && Input.GetButtonDown("Jump"))
         {
             if (isGrounded)
             {

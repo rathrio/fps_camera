@@ -106,8 +106,7 @@ public class PlayerMovement : MonoBehaviour
 
             if (hasDoubleJumped)
             {
-                Debug.Log("hit floor after double jump");
-                TriggerExplosionAtLandingLocation();
+                //TriggerExplosionAtLandingLocation();
                 hasDoubleJumped = false;
             }
         }

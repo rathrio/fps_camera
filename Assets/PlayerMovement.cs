@@ -55,6 +55,22 @@ public class PlayerMovement : MonoBehaviour
         ResetForwardVelocity();
     }
 
+    void TriggerExplosionAtLandingLocation()
+    {
+        Collider[] objects = Physics.OverlapSphere(transform.position, 50f);
+
+        foreach (Collider collider in objects)
+        {
+            Rigidbody rb = collider.attachedRigidbody;
+            if (rb == null)
+            {
+                continue;
+            }
+
+            rb.AddExplosionForce(500f, transform.position + Vector3.down * 4f, 5f);
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -87,7 +103,13 @@ public class PlayerMovement : MonoBehaviour
         if (isGrounded && velocity.y < 0)
         {
             ResetVelocity();
-            hasDoubleJumped = false;
+
+            if (hasDoubleJumped)
+            {
+                Debug.Log("hit floor after double jump");
+                TriggerExplosionAtLandingLocation();
+                hasDoubleJumped = false;
+            }
         }
 
         // Contact with ceiling while jumping

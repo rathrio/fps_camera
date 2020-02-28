@@ -3,6 +3,7 @@
 public class PlayerMovement : MonoBehaviour
 {
     public CharacterController character;
+    public Transform camera;
 
     public float speed = 12f;
     public float gravity = -9.81f;
@@ -16,7 +17,7 @@ public class PlayerMovement : MonoBehaviour
     public float crouchSpeedFactor = 0.1f;
 
     public Transform groundCheck;
-    public float groundDistance = 0.4f;
+    public float groundCheckDistance = 0.4f;
     public LayerMask groundMask;
 
     float standingHeight;
@@ -29,6 +30,7 @@ public class PlayerMovement : MonoBehaviour
 
     internal Vector3 velocity;
     bool isGrounded;
+    bool hittingCeiling;
     bool hasDoubleJumped = false;
     bool holdingShift = false;
     bool holdingCrouch = false;
@@ -56,7 +58,9 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+        isGrounded = Physics.CheckSphere(groundCheck.position, groundCheckDistance, groundMask);
+        hittingCeiling = Physics.CheckSphere(camera.position, 1.5f, groundMask);
+
         holdingShift = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
         holdingCrouch = Input.GetKey(KeyCode.LeftControl);
         bool holdingJump = Input.GetButtonDown("Jump");
@@ -70,7 +74,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // Stand back up
-        if (!holdingCrouch && isCrouching)
+        if (!holdingCrouch && isCrouching && !hittingCeiling)
         {
             character.height = standingHeight;
             groundCheck.Translate(Vector3.down * groundCheckCrouchOffset);
@@ -124,7 +128,7 @@ public class PlayerMovement : MonoBehaviour
             if (isGrounded)
             {
                 // Sprint jump
-                if (holdingShift)
+                if (holdingShift && !isCrouching)
                 {
                     Debug.Log("SPRINT JUMP");
                     velocity.x = motion.x * sprintJumpVelocityFactor;

@@ -8,8 +8,9 @@ public class PlayerMovement : MonoBehaviour
     public float gravity = -9.81f;
     public float gravityMultiplier = 8f;
     public float jumpHeight = 6f;
-    public float groundedOffset = -1f;
+    public float groundedOffset = -2f;
     public float sprintFactor = 2f;
+    public float sprintJumpBoost = 50f;
     public float crouchFactor = 0.5f;
     public float crouchSpeedFactor = 0.1f;
 
@@ -25,18 +26,30 @@ public class PlayerMovement : MonoBehaviour
      */
     float groundCheckCrouchOffset;
 
-    Vector3 velocity;
+    internal Vector3 velocity;
     bool isGrounded;
     bool hasDoubleJumped = false;
     bool holdingShift = false;
     bool holdingCrouch = false;
     bool isCrouching = false;
 
-    private void Start()
+    void Start()
     {
         standingHeight = character.height;
         crouchingHeight = character.height * crouchFactor;
         groundCheckCrouchOffset = (standingHeight - crouchingHeight) / 2;
+    }
+
+    void ResetForwardVelocity()
+    {
+        velocity.z = 0f;
+        velocity.x = 0f;
+    }
+
+    void ResetVelocity()
+    {
+        velocity.y = groundedOffset;
+        ResetForwardVelocity();
     }
 
     // Update is called once per frame
@@ -65,7 +78,7 @@ public class PlayerMovement : MonoBehaviour
         // Contact with floor
         if (isGrounded && velocity.y < 0)
         {
-            velocity.y = groundedOffset;
+            ResetVelocity();
             hasDoubleJumped = false;
         }
 
@@ -82,8 +95,6 @@ public class PlayerMovement : MonoBehaviour
         {
             actualSpeed *= sprintFactor;
         }
-
-        Debug.Log(isGrounded);
 
         // Crouch speed
         if (isCrouching && isGrounded)
@@ -106,14 +117,25 @@ public class PlayerMovement : MonoBehaviour
             actualGravity *= 20;
         }
 
+        // Regular jump
         if (!holdingCrouch && Input.GetButtonDown("Jump"))
         {
             if (isGrounded)
             {
+                // Sprint jump
+                if (holdingShift)
+                {
+                    velocity.x = motion.x * sprintJumpBoost;
+                    velocity.z = motion.z * sprintJumpBoost;
+                }
+
                 velocity.y = Mathf.Sqrt(jumpHeight * -2f * actualGravity);
             }
+
+            // Double jump
             else if (!hasDoubleJumped)
             {
+                ResetForwardVelocity();
                 velocity.y = Mathf.Sqrt(jumpHeight * -2f * actualGravity);
                 hasDoubleJumped = true;
             }

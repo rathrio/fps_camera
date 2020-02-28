@@ -59,11 +59,13 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         isGrounded = Physics.CheckSphere(groundCheck.position, groundCheckDistance, groundMask);
-        hittingCeiling = Physics.CheckSphere(camera.position, 1.5f, groundMask);
+        hittingCeiling = Physics.CheckSphere(camera.position, 1f, groundMask);
 
         holdingShift = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
         holdingCrouch = Input.GetKey(KeyCode.LeftControl);
         bool holdingJump = Input.GetButtonDown("Jump");
+
+        bool standingBlockedByCeiling = isCrouching && hittingCeiling && !holdingCrouch;
 
         // Crouching
         if (holdingCrouch && !isCrouching)
@@ -86,6 +88,12 @@ public class PlayerMovement : MonoBehaviour
         {
             ResetVelocity();
             hasDoubleJumped = false;
+        }
+
+        // Contact with ceiling while jumping
+        if (!isGrounded && (character.collisionFlags & CollisionFlags.Above) != 0 && velocity.y > 0)
+        {
+            velocity.y = -velocity.y;
         }
 
         // Unity recognizes "a" as 1 and "d" as -1.
@@ -123,7 +131,7 @@ public class PlayerMovement : MonoBehaviour
             actualGravity *= 20;
         }
 
-        if (holdingJump)
+        if (holdingJump && !standingBlockedByCeiling)
         {
             if (isGrounded)
             {
@@ -140,7 +148,7 @@ public class PlayerMovement : MonoBehaviour
                 velocity.y = Mathf.Sqrt(jumpHeight * -2f * actualGravity);
 
                 // Crouch jump
-                if (isCrouching)
+                if (holdingCrouch && !hittingCeiling)
                 {
                     Debug.Log("CROUCH JUMP");
                     velocity.y *= crouchJumpVelocityFactor;

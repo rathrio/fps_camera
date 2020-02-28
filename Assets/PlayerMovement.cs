@@ -1,10 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    public CharacterController controller;
+    public CharacterController character;
 
     public float speed = 12f;
     public float gravity = -9.81f;
@@ -19,12 +17,27 @@ public class PlayerMovement : MonoBehaviour
     public float groundDistance = 0.4f;
     public LayerMask groundMask;
 
+    float standingHeight;
+    float crouchingHeight;
+
+    /**
+     * How far the ground check needs be moved around when crouching
+     */
+    float groundCheckCrouchOffset;
+
     Vector3 velocity;
     bool isGrounded;
     bool hasDoubleJumped = false;
     bool holdingShift = false;
     bool holdingCrouch = false;
     bool isCrouching = false;
+
+    private void Start()
+    {
+        standingHeight = character.height;
+        crouchingHeight = character.height * crouchFactor;
+        groundCheckCrouchOffset = (standingHeight - crouchingHeight) / 2;
+    }
 
     // Update is called once per frame
     void Update()
@@ -36,15 +49,17 @@ public class PlayerMovement : MonoBehaviour
         // Crouching
         if (holdingCrouch && !isCrouching)
         {
-            controller.height *= crouchFactor;
+            character.height = crouchingHeight;
+            groundCheck.Translate(Vector3.up * groundCheckCrouchOffset);
             isCrouching = true;
         }
 
         // Stand back up
         if (!holdingCrouch && isCrouching)
         {
+            character.height = standingHeight;
+            groundCheck.Translate(Vector3.down * groundCheckCrouchOffset);
             isCrouching = false;
-            controller.height /= crouchFactor;
         }
 
         // Contact with floor
@@ -68,6 +83,7 @@ public class PlayerMovement : MonoBehaviour
             actualSpeed *= sprintFactor;
         }
 
+        Debug.Log(isGrounded);
 
         // Crouch speed
         if (isCrouching && isGrounded)
@@ -75,16 +91,12 @@ public class PlayerMovement : MonoBehaviour
             actualSpeed *= crouchSpeedFactor;
         }
 
-        Debug.Log(actualSpeed);
-
-
         // Move player according to x, z input and speed.
         Vector3 horizontalMove = transform.right * x;
         Vector3 verticalMove = transform.forward * z;
         Vector3 move = horizontalMove + verticalMove;
         Vector3 motion = move * actualSpeed * Time.deltaTime;
-        Debug.Log(motion);
-        controller.Move(motion);
+        character.Move(motion);
 
         float actualGravity = gravity * gravityMultiplier;
 
@@ -99,7 +111,8 @@ public class PlayerMovement : MonoBehaviour
             if (isGrounded)
             {
                 velocity.y = Mathf.Sqrt(jumpHeight * -2f * actualGravity);
-            } else if (!hasDoubleJumped)
+            }
+            else if (!hasDoubleJumped)
             {
                 velocity.y = Mathf.Sqrt(jumpHeight * -2f * actualGravity);
                 hasDoubleJumped = true;
@@ -108,6 +121,6 @@ public class PlayerMovement : MonoBehaviour
 
         velocity.y += actualGravity * Time.deltaTime;
 
-        controller.Move(velocity * Time.deltaTime);
+        character.Move(velocity * Time.deltaTime);
     }
 }

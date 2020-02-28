@@ -395,7 +395,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 424696636}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7.7072754, y: 3.09, z: -5.87}
+  m_LocalPosition: {x: 7.7072754, y: 6.96, z: -2.73}
   m_LocalScale: {x: 4.21, y: 0.39, z: 4.05}
   m_Children: []
   m_Father: {fileID: 0}
@@ -683,7 +683,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92e27f50081e72f49844e23aca88aa7f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mouseSensitivity: 200
+  mouseSensitivity: 150
   playerBody: {fileID: 1389477804}
 --- !u!1 &1037452146
 GameObject:
@@ -900,7 +900,7 @@ GameObject:
   - component: {fileID: 1389477806}
   m_Layer: 0
   m_Name: First Person Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -953,14 +953,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   controller: {fileID: 1389477805}
-  speed: 12
+  speed: 10
   gravity: -9.81
   gravityMultiplier: 8
-  jumpHeight: 6
+  jumpHeight: 5
   groundedOffset: -1
   sprintFactor: 2
-  crouchFactor: 0.5
-  crouchSpeedFactor: 0.1
+  crouchFactor: 0.4
+  crouchSpeedFactor: 0.5
   groundCheck: {fileID: 1037452147}
   groundDistance: 0.4
   groundMask:

@@ -71,9 +71,10 @@ MonoBehaviour:
   gravityMultiplier: 8
   jumpHeight: 5
   groundedOffset: -1
-  sprintFactor: 2
-  sprintJumpBoost: 80
-  crouchFactor: 0.4
+  sprintSpeedFactor: 2
+  sprintJumpVelocityFactor: 50
+  crouchHeightFactor: 0.5
+  crouchJumpVelocityFactor: 1.5
   crouchSpeedFactor: 0.5
   groundCheck: {fileID: 9118508253819012242}
   groundDistance: 0.4

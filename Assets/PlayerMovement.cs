@@ -9,9 +9,10 @@ public class PlayerMovement : MonoBehaviour
     public float gravityMultiplier = 8f;
     public float jumpHeight = 6f;
     public float groundedOffset = -2f;
-    public float sprintFactor = 2f;
-    public float sprintJumpBoost = 50f;
-    public float crouchFactor = 0.5f;
+    public float sprintSpeedFactor = 2f;
+    public float sprintJumpVelocityFactor = 50f;
+    public float crouchHeightFactor = 0.5f;
+    public float crouchJumpVelocityFactor = 1.5f;
     public float crouchSpeedFactor = 0.1f;
 
     public Transform groundCheck;
@@ -36,7 +37,7 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         standingHeight = character.height;
-        crouchingHeight = character.height * crouchFactor;
+        crouchingHeight = character.height * crouchHeightFactor;
         groundCheckCrouchOffset = (standingHeight - crouchingHeight) / 2;
     }
 
@@ -58,6 +59,7 @@ public class PlayerMovement : MonoBehaviour
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
         holdingShift = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
         holdingCrouch = Input.GetKey(KeyCode.LeftControl);
+        bool holdingJump = Input.GetButtonDown("Jump");
 
         // Crouching
         if (holdingCrouch && !isCrouching)
@@ -93,7 +95,7 @@ public class PlayerMovement : MonoBehaviour
         // Sprint speed
         if (z == 1 && x == 0 && holdingShift && isGrounded && !isCrouching)
         {
-            actualSpeed *= sprintFactor;
+            actualSpeed *= sprintSpeedFactor;
         }
 
         // Crouch speed
@@ -112,29 +114,39 @@ public class PlayerMovement : MonoBehaviour
         float actualGravity = gravity * gravityMultiplier;
 
         // Faster crouch hack
-        if (holdingCrouch && isGrounded)
+        if (holdingCrouch && isGrounded && !holdingJump)
         {
             actualGravity *= 20;
         }
 
-        // Regular jump
-        if (!holdingCrouch && Input.GetButtonDown("Jump"))
+        if (holdingJump)
         {
             if (isGrounded)
             {
                 // Sprint jump
                 if (holdingShift)
                 {
-                    velocity.x = motion.x * sprintJumpBoost;
-                    velocity.z = motion.z * sprintJumpBoost;
+                    Debug.Log("SPRINT JUMP");
+                    velocity.x = motion.x * sprintJumpVelocityFactor;
+                    velocity.z = motion.z * sprintJumpVelocityFactor;
                 }
 
+                // Regular jump
+                Debug.Log("REGULAR JUMP");
                 velocity.y = Mathf.Sqrt(jumpHeight * -2f * actualGravity);
+
+                // Crouch jump
+                if (isCrouching)
+                {
+                    Debug.Log("CROUCH JUMP");
+                    velocity.y *= crouchJumpVelocityFactor;
+                }
             }
 
-            // Double jump
+            // not grounded -> Double jump
             else if (!hasDoubleJumped)
             {
+                Debug.Log("DOUBLE JUMP");
                 ResetForwardVelocity();
                 velocity.y = Mathf.Sqrt(jumpHeight * -2f * actualGravity);
                 hasDoubleJumped = true;

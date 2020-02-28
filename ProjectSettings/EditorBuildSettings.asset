@@ -4,5 +4,26 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/Welcome.unity
+    guid: 87fbd00e442b97e44a105e3f4f1fcace
+  - enabled: 1
+    path: Assets/Scenes/Jump.unity
+    guid: 81c712a9b4685084a9b5134e736e3a68
+  - enabled: 1
+    path: Assets/Scenes/Double Jump.unity
+    guid: 558fb9ad9130ed2408396422144fb6c0
+  - enabled: 1
+    path: Assets/Scenes/Multiple Jumps.unity
+    guid: fc27a8f76fc750c42975cb8df7d3f25e
+  - enabled: 1
+    path: Assets/Scenes/Sprint.unity
+    guid: 091d409fe8e1d0d4e8ed28960995e9f5
+  - enabled: 1
+    path: Assets/Scenes/Crouch.unity
+    guid: 874ed2eaf895a7f4dafc404b27df35b1
+  - enabled: 1
+    path: Assets/Scenes/Crouch Jump.unity
+    guid: 8c5a0cf02bc6e4244ac75f75694cd779
   m_configObjects: {}

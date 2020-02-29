@@ -6,6 +6,7 @@ public class PlayerMovement : MonoBehaviour
     public Transform mainCamera;
 
     public float speed = 12f;
+    public float drag = 5f;
     public float gravity = -9.81f;
     public float gravityMultiplier = 8f;
     public float jumpHeight = 6f;
@@ -14,7 +15,7 @@ public class PlayerMovement : MonoBehaviour
     public float sprintJumpVelocityFactor = 90f;
     public float crouchHeightFactor = 0.5f;
     public float crouchJumpVelocityFactor = 1.5f;
-    public float crouchSpeedFactor = 0.1f;
+    public float crouchSpeedFactor = 0.5f;
 
     public float fallMultiplier = 1.5f;
     public float lowJumpMultiplier = 1.8f;
@@ -52,10 +53,15 @@ public class PlayerMovement : MonoBehaviour
         velocity.x = 0f;
     }
 
-    void ResetVelocity()
+    void ResetJumpVelocity()
     {
         velocity.y = groundedOffset;
+    }
+
+    void ResetVelocity()
+    {
         ResetForwardVelocity();
+        ResetJumpVelocity();
     }
 
     // Update is called once per frame
@@ -116,7 +122,7 @@ public class PlayerMovement : MonoBehaviour
         // Contact with ceiling while jumping
         if (!isGrounded && (character.collisionFlags & CollisionFlags.Above) != 0 && velocity.y > 0)
         {
-            velocity.y = -velocity.y;
+            velocity.y = -velocity.y * 0.5f;
         }
 
         // Unity recognizes "a" as 1 and "d" as -1.
@@ -188,6 +194,8 @@ public class PlayerMovement : MonoBehaviour
 
         // Gravity
         velocity.y += actualGravity * Time.deltaTime;
+
+        // Apply velocity
         character.Move(velocity * Time.deltaTime);
     }
 }

@@ -15,6 +15,7 @@ public class MouseLook : MonoBehaviour
     void Start()
     {
         // Hide and lock cursor to the center of the screen, so that player can't move mouse cursor out of window.
+        Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
     }
 

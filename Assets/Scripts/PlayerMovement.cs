@@ -61,7 +61,7 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        isGrounded = Physics.CheckSphere(groundCheck.position, groundCheckDistance, groundMask);
+        isGrounded = Physics.CheckSphere(groundCheck.position, groundCheckDistance, groundMask, QueryTriggerInteraction.Ignore);
         hittingCeiling = Physics.CheckSphere(mainCamera.position, 1f, groundMask);
 
         holdingShift = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
@@ -152,6 +152,7 @@ public class PlayerMovement : MonoBehaviour
             actualGravity *= 20;
         }
 
+        // Jumping
         if (pressedJump && !standingBlockedByCeiling)
         {
             if (isGrounded)
@@ -185,8 +186,8 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
+        // Gravity
         velocity.y += actualGravity * Time.deltaTime;
-
         character.Move(velocity * Time.deltaTime);
     }
 }

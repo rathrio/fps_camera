@@ -2,25 +2,24 @@
 
 public class FallingPlatform : MonoBehaviour
 {
-    public float fallSpeed = 0.3f;
+    public float fallSpeed = 0.2f;
+    public float fallDelay = 1f;
 
     bool triggered = false;
 
-    private void OnCollisionEnter(Collision collision)
+    void Trigger()
     {
-        Collider other = collision.collider;
+        triggered = true;
+    }
 
-        if (other.gameObject.CompareTag("Lava"))
+    private void OnTriggerEnter(Collider other)
+    {
+        if (triggered)
         {
-            Debug.Log("HIT LAVA");
-
-            Destroy(gameObject);
             return;
         }
 
-        Debug.Log("HIT PLAYER");
-
-        triggered = true;
+        Invoke("Trigger", fallDelay);
     }
 
     private void FixedUpdate()
@@ -28,6 +27,11 @@ public class FallingPlatform : MonoBehaviour
         if (!triggered)
         {
             return;
+        }
+
+        if (transform.position.y < -50f)
+        {
+            Destroy(gameObject);
         }
 
         transform.Translate(Vector3.down * fallSpeed);

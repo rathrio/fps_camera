@@ -489,7 +489,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: First Person Player
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 495842974268519162, guid: 1a6937a57c6d1454d809458cb67270c8, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 1a6937a57c6d1454d809458cb67270c8, type: 3}
 --- !u!1 &724234995
 GameObject:
@@ -628,6 +629,25 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &752699891 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1304083016247794236, guid: d3e2e90efa2f95b4fbecb8800a7383a1,
+    type: 3}
+  m_PrefabInstance: {fileID: 1500248253}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &752699895
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 752699891}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2ff1c317d360864e828337a8b58fd1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  movement: {fileID: 0}
 --- !u!1 &758920816
 GameObject:
   m_ObjectHideFlags: 0
@@ -750,6 +770,50 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2597432221514498955, guid: ad4e75104d524c34288d243171805b4f,
     type: 3}
   m_PrefabInstance: {fileID: 1296722403}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1419892877 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 495842974268519167, guid: 1a6937a57c6d1454d809458cb67270c8,
+    type: 3}
+  m_PrefabInstance: {fileID: 713525029}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1419892878
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1419892877}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca5ff1dbc9e6cf8418a998619f624d78, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  character: {fileID: 1419892879}
+  mainCamera: {fileID: 574944213}
+  speed: 10
+  drag: 5
+  gravity: -9.81
+  gravityMultiplier: 8
+  jumpHeight: 6
+  groundedOffset: -1
+  sprintSpeedFactor: 2
+  sprintJumpVelocityFactor: 90
+  crouchHeightFactor: 0.5
+  crouchJumpVelocityFactor: 1.5
+  crouchSpeedFactor: 0.5
+  fallMultiplier: 1.3
+  lowJumpMultiplier: 1.8
+  groundCheck: {fileID: 1980541098}
+  groundCheckDistance: 0.4
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 256
+--- !u!143 &1419892879 stripped
+CharacterController:
+  m_CorrespondingSourceObject: {fileID: 495842974268519161, guid: 1a6937a57c6d1454d809458cb67270c8,
+    type: 3}
+  m_PrefabInstance: {fileID: 713525029}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1472118763
 GameObject:
@@ -961,8 +1025,15 @@ PrefabInstance:
       propertyPath: m_Name
       value: Crosshair
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3847833211501144173, guid: d3e2e90efa2f95b4fbecb8800a7383a1, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: d3e2e90efa2f95b4fbecb8800a7383a1, type: 3}
+--- !u!4 &1980541098 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 495842973681061415, guid: 1a6937a57c6d1454d809458cb67270c8,
+    type: 3}
+  m_PrefabInstance: {fileID: 713525029}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2013265353
 GameObject:
   m_ObjectHideFlags: 0

@@ -33,9 +33,9 @@ public class PlayerMovement : MonoBehaviour
     float groundCheckCrouchOffset;
 
     internal Vector3 velocity;
-    bool isGrounded;
+    public bool isGrounded { get; private set; }
     bool hittingCeiling;
-    bool hasDoubleJumped;
+    public bool hasDoubleJumped { get; private set; }
     bool holdingShift;
     bool holdingCrouch;
     bool isCrouching;
@@ -64,10 +64,19 @@ public class PlayerMovement : MonoBehaviour
         ResetJumpVelocity();
     }
 
+    void Land()
+    {
+        ResetVelocity();
+        hasDoubleJumped = false;
+    }
+
     // Update is called once per frame
     void Update()
     {
+        // Is our groundCheck transform intersecting with the ground layer?
         isGrounded = Physics.CheckSphere(groundCheck.position, groundCheckDistance, groundMask, QueryTriggerInteraction.Ignore);
+
+        // Is the camera intersecting with the ground layer? (Not super accurate, but does the job)
         hittingCeiling = Physics.CheckSphere(mainCamera.position, 1f, groundMask, QueryTriggerInteraction.Ignore);
 
         holdingShift = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
@@ -100,12 +109,7 @@ public class PlayerMovement : MonoBehaviour
             // Contact with floor
             if (isGrounded)
             {
-                ResetVelocity();
-
-                if (hasDoubleJumped)
-                {
-                    hasDoubleJumped = false;
-                }
+                Land();
             } else // Falling down faster
             {
                 actualGravity *= fallMultiplier;

@@ -738,7 +738,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: Crosshair
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3847833211501144173, guid: d3e2e90efa2f95b4fbecb8800a7383a1, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: d3e2e90efa2f95b4fbecb8800a7383a1, type: 3}
 --- !u!1 &1472118763
 GameObject:

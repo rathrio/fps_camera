@@ -35,10 +35,10 @@ public class PlayerMovement : MonoBehaviour
     internal Vector3 velocity;
     bool isGrounded;
     bool hittingCeiling;
-    bool hasDoubleJumped = false;
-    bool holdingShift = false;
-    bool holdingCrouch = false;
-    bool isCrouching = false;
+    bool hasDoubleJumped;
+    bool holdingShift;
+    bool holdingCrouch;
+    bool isCrouching;
 
     void Start()
     {
@@ -154,7 +154,7 @@ public class PlayerMovement : MonoBehaviour
         // Faster crouch hack
         if (holdingCrouch && isGrounded && !holdingJump)
         {
-            actualGravity *= 20;
+            actualGravity *= 10;
         }
 
         // Jumping

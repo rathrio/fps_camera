@@ -33,6 +33,14 @@ public class GameManager : MonoBehaviour
         if (player != null && player.position.y < -2f)
         {
             LevelFailed();
+            return;
+        }
+
+        // "R" for restarting active level
+        if (Input.GetKey(KeyCode.R))
+        {
+            RestartActiveLevel();
+            return;
         }
     }
 

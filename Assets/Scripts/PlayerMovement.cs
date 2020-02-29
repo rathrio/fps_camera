@@ -11,7 +11,7 @@ public class PlayerMovement : MonoBehaviour
     public float jumpHeight = 6f;
     public float groundedOffset = -2f;
     public float sprintSpeedFactor = 2f;
-    public float sprintJumpVelocityFactor = 50f;
+    public float sprintJumpVelocityFactor = 90f;
     public float crouchHeightFactor = 0.5f;
     public float crouchJumpVelocityFactor = 1.5f;
     public float crouchSpeedFactor = 0.1f;

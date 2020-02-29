@@ -280,7 +280,7 @@ MonoBehaviour:
   jumpHeight: 6
   groundedOffset: -1
   sprintSpeedFactor: 2
-  sprintJumpVelocityFactor: 50
+  sprintJumpVelocityFactor: 90
   crouchHeightFactor: 0.5
   crouchJumpVelocityFactor: 1.5
   crouchSpeedFactor: 0.5

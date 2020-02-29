@@ -2,8 +2,8 @@
 
 public class FallingPlatform : MonoBehaviour
 {
-    public float fallSpeed = 0.2f;
-    public float fallDelay = 1f;
+    public float fallSpeed = 20f;
+    public float fallDelay = 0.8f;
 
     bool triggered = false;
 
@@ -22,7 +22,7 @@ public class FallingPlatform : MonoBehaviour
         Invoke("Trigger", fallDelay);
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
         if (!triggered)
         {
@@ -32,8 +32,9 @@ public class FallingPlatform : MonoBehaviour
         if (transform.position.y < -50f)
         {
             Destroy(gameObject);
+            return;
         }
 
-        transform.Translate(Vector3.down * fallSpeed);
+        transform.Translate(Vector3.down * fallSpeed * Time.deltaTime);
     }
 }

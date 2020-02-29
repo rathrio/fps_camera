@@ -25,8 +25,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5169e9cf20e73024bb9b8fb57be41cc7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fallSpeed: 0.2
-  fallDelay: 1
+  fallSpeed: 50
+  fallDelay: 0.8
 --- !u!1001 &6560095929685056788
 PrefabInstance:
   m_ObjectHideFlags: 0

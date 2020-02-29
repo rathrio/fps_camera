@@ -58,7 +58,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 70
+  field of view: 80
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -275,6 +275,7 @@ MonoBehaviour:
   character: {fileID: 495842974268519161}
   mainCamera: {fileID: 495842973605257248}
   speed: 10
+  drag: 5
   gravity: -9.81
   gravityMultiplier: 8
   jumpHeight: 6

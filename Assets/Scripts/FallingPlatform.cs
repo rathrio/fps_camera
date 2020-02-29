@@ -3,7 +3,7 @@
 public class FallingPlatform : MonoBehaviour
 {
     public float fallSpeed = 20f;
-    public float fallDelay = 0.8f;
+    public float fallDelay = 0.9f;
 
     bool triggered = false;
 

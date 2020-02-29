@@ -68,7 +68,7 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         isGrounded = Physics.CheckSphere(groundCheck.position, groundCheckDistance, groundMask, QueryTriggerInteraction.Ignore);
-        hittingCeiling = Physics.CheckSphere(mainCamera.position, 1f, groundMask);
+        hittingCeiling = Physics.CheckSphere(mainCamera.position, 1f, groundMask, QueryTriggerInteraction.Ignore);
 
         holdingShift = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
         holdingCrouch = Input.GetKey(KeyCode.LeftControl);
@@ -115,7 +115,6 @@ public class PlayerMovement : MonoBehaviour
         // Low jump: Apply more gravity when moving upwards and not holding the jump button
         if (velocity.y > 0 && !holdingJump)
         {
-            Debug.Log("LOW JUMP");
             actualGravity *= lowJumpMultiplier;
         } 
 
@@ -166,7 +165,6 @@ public class PlayerMovement : MonoBehaviour
                 // Sprint jump
                 if (holdingShift && !isCrouching)
                 {
-                    Debug.Log("SPRINT JUMP");
                     velocity.x = motion.x * sprintJumpVelocityFactor;
                     velocity.z = motion.z * sprintJumpVelocityFactor;
                 }
@@ -177,7 +175,6 @@ public class PlayerMovement : MonoBehaviour
                 // Crouch jump
                 if (holdingCrouch && !hittingCeiling)
                 {
-                    Debug.Log("CROUCH JUMP");
                     velocity.y *= crouchJumpVelocityFactor;
                 }
             }
@@ -185,7 +182,6 @@ public class PlayerMovement : MonoBehaviour
             // not grounded -> Double jump
             else if (!hasDoubleJumped)
             {
-                Debug.Log("DOUBLE JUMP");
                 ResetForwardVelocity();
                 velocity.y = Mathf.Sqrt(jumpHeight * -2f * actualGravity);
                 hasDoubleJumped = true;

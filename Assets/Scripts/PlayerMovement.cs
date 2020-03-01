@@ -33,12 +33,14 @@ public class PlayerMovement : MonoBehaviour
     float groundCheckCrouchOffset;
 
     internal Vector3 velocity;
-    public bool isGrounded { get; private set; }
     bool hittingCeiling;
-    public bool hasDoubleJumped { get; private set; }
     bool holdingShift;
     bool holdingCrouch;
     bool isCrouching;
+
+    public bool isGrounded { get; private set; }
+    public bool hasDoubleJumped { get; private set; }
+    public bool hasCrouchJumped { get; private set; }
 
     void Start()
     {
@@ -68,6 +70,7 @@ public class PlayerMovement : MonoBehaviour
     {
         ResetVelocity();
         hasDoubleJumped = false;
+        hasCrouchJumped = false;
     }
 
     // Update is called once per frame
@@ -116,7 +119,8 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
-        // Apply more gravity when moving upwards and not holding the jump button -> Low jump when tapping the space bar.
+        // Apply more gravity when moving upwards and not holding the jump button
+        // -> Low jump when only tapping the space bar.
         if (velocity.y > 0 && !holdingJump)
         {
             actualGravity *= lowJumpMultiplier;
@@ -128,10 +132,10 @@ public class PlayerMovement : MonoBehaviour
             velocity.y = -velocity.y * 0.5f;
         }
 
-        // Unity recognizes "a" as 1 and "d" as -1.
+        // Unity recognizes "a" as 1 and "d" as -1
         float x = Input.GetAxis("Horizontal");
 
-        // Unity recognizes "w" as 1 and "s" as -1.
+        // Unity recognizes "w" as 1 and "s" as -1
         float z = Input.GetAxis("Vertical");
 
         float actualSpeed = speed;
@@ -142,16 +146,17 @@ public class PlayerMovement : MonoBehaviour
             actualSpeed *= sprintSpeedFactor;
         }
 
-        // Crouch speed
-        if (isCrouching && isGrounded)
+        // Decrease speed when crouching or when in the air after crouch jumping
+        if (isCrouching && isGrounded || hasCrouchJumped)
         {
             actualSpeed *= crouchSpeedFactor;
         }
 
-        // Move player according to x, z input and speed.
+        // Move player according to x, z input and speed
         Vector3 horizontalMove = transform.right * x;
         Vector3 verticalMove = transform.forward * z;
         Vector3 move = horizontalMove + verticalMove;
+
         Vector3 motion = move * actualSpeed * Time.deltaTime;
         character.Move(motion);
 
@@ -169,12 +174,14 @@ public class PlayerMovement : MonoBehaviour
                 // Regular jump: Increase upwards velocity
                 velocity.y = Mathf.Sqrt(jumpHeight * -2f * actualGravity);
 
-                // Sprint jump: Increase forward velocity, decrease upwards velocity
+                // Sprint jump
                 if (holdingShift && !isCrouching)
                 {
+                    // Increase forward velocity
                     velocity.x = motion.x * sprintJumpVelocityFactor;
                     velocity.z = motion.z * sprintJumpVelocityFactor;
 
+                    // Decrease upwards velocity
                     velocity.y *= 0.8f;
                 }
 
@@ -182,7 +189,11 @@ public class PlayerMovement : MonoBehaviour
                 // Crouch jump
                 if (holdingCrouch && !hittingCeiling)
                 {
+                    // Increase upwards velocity
                     velocity.y *= crouchJumpVelocityFactor;
+
+                    // In order to decrease forwards motion
+                    hasCrouchJumped = true;
                 }
             }
 
@@ -190,6 +201,7 @@ public class PlayerMovement : MonoBehaviour
             else if (!hasDoubleJumped)
             {
                 ResetForwardVelocity();
+                hasCrouchJumped = false;
                 velocity.y = Mathf.Sqrt(jumpHeight * -2f * actualGravity);
                 hasDoubleJumped = true;
             }

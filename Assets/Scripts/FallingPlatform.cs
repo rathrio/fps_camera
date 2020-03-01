@@ -19,8 +19,6 @@ public class FallingPlatform : MonoBehaviour
     void Trigger()
     {
         triggered = true;
-        Debug.Log("triggered");
-
         rb.useGravity = true;
         rb.velocity = new Vector3(0, -fallSpeed, 0);
     }

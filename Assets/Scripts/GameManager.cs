@@ -61,7 +61,7 @@ public class GameManager : MonoBehaviour
         Invoke("RestartActiveLevel", restartLevelDelay);
     }
 
-    void RestartActiveLevel()
+    public void RestartActiveLevel()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }

@@ -1,15 +1,13 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    bool levelFailed = false;
-
     public float restartLevelDelay = 1f;
 
     Transform player;
+    bool levelFailed = false;
 
     private void Start()
     {
@@ -46,8 +44,14 @@ public class GameManager : MonoBehaviour
 
     public void CompleteLevel()
     {
-        int nextLevelIndex = SceneManager.GetActiveScene().buildIndex + 1;
+        FindObjectOfType<Score>().completionTimes.Add(CurrentBuildIndex(), Time.timeSinceLevelLoad);
+        int nextLevelIndex = CurrentBuildIndex() + 1;
         SceneManager.LoadScene(nextLevelIndex);
+    }
+
+    private static int CurrentBuildIndex()
+    {
+        return SceneManager.GetActiveScene().buildIndex;
     }
 
     void LevelFailed()

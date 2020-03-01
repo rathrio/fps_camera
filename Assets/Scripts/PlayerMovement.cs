@@ -116,13 +116,13 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
-        // Low jump: Apply more gravity when moving upwards and not holding the jump button
+        // Apply more gravity when moving upwards and not holding the jump button -> Low jump when tapping the space bar.
         if (velocity.y > 0 && !holdingJump)
         {
             actualGravity *= lowJumpMultiplier;
         } 
 
-        // Contact with ceiling while jumping
+        // Contact with ceiling while jumping -> Apply inverse y velocity
         if (!isGrounded && (character.collisionFlags & CollisionFlags.Above) != 0 && velocity.y > 0)
         {
             velocity.y = -velocity.y * 0.5f;

@@ -11,13 +11,13 @@ public class PlayerMovement : MonoBehaviour
     public float gravityMultiplier = 8f;
     public float jumpHeight = 6f;
     public float groundedOffset = -2f;
-    public float sprintSpeedFactor = 2f;
+    public float sprintSpeedFactor = 1.6f;
     public float sprintJumpVelocityFactor = 90f;
     public float crouchHeightFactor = 0.5f;
     public float crouchJumpVelocityFactor = 1.5f;
     public float crouchSpeedFactor = 0.5f;
 
-    public float fallMultiplier = 1.5f;
+    public float fallMultiplier = 1.2f;
     public float lowJumpMultiplier = 1.8f;
 
     public Transform groundCheck;
@@ -166,15 +166,18 @@ public class PlayerMovement : MonoBehaviour
         {
             if (isGrounded)
             {
-                // Sprint jump
+                // Regular jump: Increase upwards velocity
+                velocity.y = Mathf.Sqrt(jumpHeight * -2f * actualGravity);
+
+                // Sprint jump: Increase forward velocity, decrease upwards velocity
                 if (holdingShift && !isCrouching)
                 {
                     velocity.x = motion.x * sprintJumpVelocityFactor;
                     velocity.z = motion.z * sprintJumpVelocityFactor;
+
+                    velocity.y *= 0.8f;
                 }
 
-                // Regular jump
-                velocity.y = Mathf.Sqrt(jumpHeight * -2f * actualGravity);
 
                 // Crouch jump
                 if (holdingCrouch && !hittingCeiling)

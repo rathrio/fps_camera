@@ -19,14 +19,14 @@ public class JumpIndicator : MonoBehaviour
     void Update()
     {
         // Default
-        if (player.isGrounded)
+        if (player.IsGrounded)
         {
             cursor.color = white;
             return;
         }
 
         // No more jump available
-        if (player.hasDoubleJumped)
+        if (player.HasDoubleJumped)
         {
             cursor.color = red;
             return;

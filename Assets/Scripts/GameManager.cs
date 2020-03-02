@@ -6,12 +6,12 @@ public class GameManager : MonoBehaviour
 {
     public float restartLevelDelay = 1f;
 
-    Transform player;
-    bool levelFailed = false;
+    // Hacky global storage for Demo purposes
+    public Dictionary<int, float> completionTimes = new Dictionary<int, float>();
 
-    private void Start()
+    void Awake()
     {
-        player = GameObject.FindGameObjectWithTag("Player")?.transform;
+        DontDestroyOnLoad(gameObject);
     }
 
     public void StartGame()
@@ -19,21 +19,9 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(1);
     }
 
-    public void QuitGame()
-    {
-        Application.Quit();
-    }
-
     // Update is called once per frame
     void Update()
     {
-        // Check if player fell off a platform
-        if (player != null && player.position.y < -2f)
-        {
-            LevelFailed();
-            return;
-        }
-
         // "R" for restarting active level
         if (Input.GetKey(KeyCode.R))
         {
@@ -44,7 +32,7 @@ public class GameManager : MonoBehaviour
 
     public void CompleteLevel()
     {
-        FindObjectOfType<Score>().completionTimes.Add(CurrentBuildIndex(), Time.timeSinceLevelLoad);
+        completionTimes[CurrentBuildIndex()] =  Time.timeSinceLevelLoad;
         int nextLevelIndex = CurrentBuildIndex() + 1;
         SceneManager.LoadScene(nextLevelIndex);
     }
@@ -54,14 +42,8 @@ public class GameManager : MonoBehaviour
         return SceneManager.GetActiveScene().buildIndex;
     }
 
-    void LevelFailed()
+    public void LevelFailed()
     {
-        if (levelFailed)
-        {
-            return;
-        }
-
-        levelFailed = true;
         Invoke("RestartActiveLevel", restartLevelDelay);
     }
 

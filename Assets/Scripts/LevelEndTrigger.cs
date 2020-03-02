@@ -9,7 +9,13 @@ public class LevelEndTrigger : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             GameManager gameManager = FindObjectOfType<GameManager>();
+            if (gameManager == null)
+            {
+                return;
+            }
+            
             gameManager.CompleteLevel();
+            return;
         }
     }
 }

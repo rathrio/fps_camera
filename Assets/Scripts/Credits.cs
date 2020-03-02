@@ -9,7 +9,7 @@ public class Credits : MonoBehaviour
 {
     public Text completionTimes;
 
-    static Dictionary<int, float> RADIS_BEST_TIMES = new Dictionary<int, float>
+    readonly static Dictionary<int, float> RADIS_BEST_TIMES = new Dictionary<int, float>
     {
         { 1, 3.14f },
         { 2, 3.14f },
@@ -28,7 +28,7 @@ public class Credits : MonoBehaviour
         Cursor.visible = true;
 
         StringBuilder sb = new StringBuilder();
-        foreach(KeyValuePair<int, float> score in FindObjectOfType<Score>().completionTimes)
+        foreach(KeyValuePair<int, float> score in FindObjectOfType<GameManager>().completionTimes)
         {
             int levelIndex = score.Key;
             String seconds = score.Value.ToString("F1") + "s\t\t" + "(" + "Radi: " + RADIS_BEST_TIMES[levelIndex] + "s)";
@@ -37,5 +37,15 @@ public class Credits : MonoBehaviour
         }
 
         completionTimes.text = sb.ToString();
+    }
+
+    public void RestartGame()
+    {
+        FindObjectOfType<GameManager>().StartGame();
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
     }
 }

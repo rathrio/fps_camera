@@ -38,9 +38,10 @@ public class PlayerMovement : MonoBehaviour
     bool holdingCrouch;
     bool isCrouching;
 
-    public bool isGrounded { get; private set; }
-    public bool hasDoubleJumped { get; private set; }
-    public bool hasCrouchJumped { get; private set; }
+    public bool IsGrounded { get; private set; }
+    public bool HasDoubleJumped { get; private set; }
+    public bool HasCrouchJumped { get; private set; }
+    public bool HasReachedLowerLevelBoundaries { get; private set; }
 
     void Start()
     {
@@ -69,15 +70,41 @@ public class PlayerMovement : MonoBehaviour
     void Land()
     {
         ResetVelocity();
-        hasDoubleJumped = false;
-        hasCrouchJumped = false;
+        HasDoubleJumped = false;
+        HasCrouchJumped = false;
+    }
+
+    void ReachedLowerLevelBoundaries()
+    {
+        if (HasReachedLowerLevelBoundaries)
+        {
+            return;
+        }
+
+        HasReachedLowerLevelBoundaries = true;
+        // Assumption: There is only one game manager and it is available when starting the game from the welcome scene.
+        GameManager gameManager = FindObjectOfType<GameManager>();
+
+        if (gameManager != null)
+        {
+            gameManager.LevelFailed();
+        } else
+        {
+            Debug.Log("Player has reached lower level boundaries");
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
+        // Did we fall of the level?
+        if (transform.position.y < -2.5f)
+        {
+            ReachedLowerLevelBoundaries();
+        }
+
         // Is our groundCheck transform intersecting with the ground layer?
-        isGrounded = Physics.CheckSphere(groundCheck.position, groundCheckDistance, groundMask, QueryTriggerInteraction.Ignore);
+        IsGrounded = Physics.CheckSphere(groundCheck.position, groundCheckDistance, groundMask, QueryTriggerInteraction.Ignore);
 
         // Is the camera intersecting with the ground layer? (Not super accurate, but does the job)
         hittingCeiling = Physics.CheckSphere(mainCamera.position, 1f, groundMask, QueryTriggerInteraction.Ignore);
@@ -110,7 +137,7 @@ public class PlayerMovement : MonoBehaviour
         if (velocity.y < 0)
         {
             // Contact with floor
-            if (isGrounded)
+            if (IsGrounded)
             {
                 Land();
             } else // Falling down faster
@@ -127,7 +154,7 @@ public class PlayerMovement : MonoBehaviour
         } 
 
         // Contact with ceiling while jumping -> Apply inverse y velocity
-        if (!isGrounded && (character.collisionFlags & CollisionFlags.Above) != 0 && velocity.y > 0)
+        if (!IsGrounded && (character.collisionFlags & CollisionFlags.Above) != 0 && velocity.y > 0)
         {
             velocity.y = -velocity.y * 0.5f;
         }
@@ -141,13 +168,13 @@ public class PlayerMovement : MonoBehaviour
         float actualSpeed = speed;
 
         // Sprint speed
-        if (z == 1 && x == 0 && holdingShift && isGrounded && !isCrouching)
+        if (z == 1 && x == 0 && holdingShift && IsGrounded && !isCrouching)
         {
             actualSpeed *= sprintSpeedFactor;
         }
 
         // Decrease speed when crouching or when in the air after crouch jumping
-        if (isCrouching && isGrounded || hasCrouchJumped)
+        if (isCrouching && IsGrounded || HasCrouchJumped)
         {
             actualSpeed *= crouchSpeedFactor;
         }
@@ -161,7 +188,7 @@ public class PlayerMovement : MonoBehaviour
         character.Move(motion);
 
         // Faster crouch hack
-        if (holdingCrouch && isGrounded && !holdingJump)
+        if (holdingCrouch && IsGrounded && !holdingJump)
         {
             actualGravity *= 10;
         }
@@ -169,7 +196,7 @@ public class PlayerMovement : MonoBehaviour
         // Jumping
         if (pressedJump && !standingBlockedByCeiling)
         {
-            if (isGrounded)
+            if (IsGrounded)
             {
                 // Regular jump: Increase upwards velocity
                 velocity.y = Mathf.Sqrt(jumpHeight * -2f * actualGravity);
@@ -193,17 +220,17 @@ public class PlayerMovement : MonoBehaviour
                     velocity.y *= crouchJumpVelocityFactor;
 
                     // In order to decrease forwards motion
-                    hasCrouchJumped = true;
+                    HasCrouchJumped = true;
                 }
             }
 
-            // not grounded -> Double jump
-            else if (!hasDoubleJumped)
+            // Not grounded -> Double jump
+            else if (!HasDoubleJumped)
             {
                 ResetForwardVelocity();
-                hasCrouchJumped = false;
+                HasCrouchJumped = false;
                 velocity.y = Mathf.Sqrt(jumpHeight * -2f * actualGravity);
-                hasDoubleJumped = true;
+                HasDoubleJumped = true;
             }
         }
 

@@ -41,6 +41,7 @@ public class PlayerMovement : MonoBehaviour
     public bool IsGrounded { get; private set; }
     public bool HasDoubleJumped { get; private set; }
     public bool HasCrouchJumped { get; private set; }
+    public bool HasSprintJumped { get; private set; }
     public bool HasReachedLowerLevelBoundaries { get; private set; }
 
     void Start()
@@ -50,21 +51,9 @@ public class PlayerMovement : MonoBehaviour
         groundCheckCrouchOffset = (standingHeight - crouchingHeight) / 2;
     }
 
-    void ResetForwardVelocity()
-    {
-        velocity.z = 0f;
-        velocity.x = 0f;
-    }
-
-    void ResetJumpVelocity()
-    {
-        velocity.y = groundedOffset;
-    }
-
     void ResetVelocity()
     {
-        ResetForwardVelocity();
-        ResetJumpVelocity();
+        velocity.y = groundedOffset;
     }
 
     void Land()
@@ -72,6 +61,7 @@ public class PlayerMovement : MonoBehaviour
         ResetVelocity();
         HasDoubleJumped = false;
         HasCrouchJumped = false;
+        HasSprintJumped = false;
     }
 
     void ReachedLowerLevelBoundaries()
@@ -165,10 +155,12 @@ public class PlayerMovement : MonoBehaviour
         // Unity recognizes "w" as 1 and "s" as -1
         float z = Input.GetAxis("Vertical");
 
+        bool movingForward = z == 1 && x == 0; 
+
         float actualSpeed = speed;
 
         // Sprint speed
-        if (z == 1 && x == 0 && holdingShift && IsGrounded && !isCrouching)
+        if (movingForward && (HasSprintJumped || (holdingShift && IsGrounded && !isCrouching)))
         {
             actualSpeed *= sprintSpeedFactor;
         }
@@ -204,12 +196,10 @@ public class PlayerMovement : MonoBehaviour
                 // Sprint jump
                 if (holdingShift && !isCrouching)
                 {
-                    // Increase forward velocity
-                    velocity.x = motion.x * sprintJumpVelocityFactor;
-                    velocity.z = motion.z * sprintJumpVelocityFactor;
+                    HasSprintJumped = true;
 
                     // Decrease upwards velocity
-                    velocity.y *= 0.8f;
+                    velocity.y *= 0.85f;
                 }
 
 
@@ -227,10 +217,11 @@ public class PlayerMovement : MonoBehaviour
             // Not grounded -> Double jump
             else if (!HasDoubleJumped)
             {
-                ResetForwardVelocity();
                 HasCrouchJumped = false;
-                velocity.y = Mathf.Sqrt(jumpHeight * -2f * actualGravity);
+                HasSprintJumped = false;
                 HasDoubleJumped = true;
+
+                velocity.y = Mathf.Sqrt(jumpHeight * -2f * actualGravity);
             }
         }
 

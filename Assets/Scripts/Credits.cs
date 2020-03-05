@@ -28,10 +28,10 @@ public class Credits : MonoBehaviour
         Cursor.visible = true;
 
         StringBuilder sb = new StringBuilder();
-        foreach(KeyValuePair<int, float> score in FindObjectOfType<GameManager>().completionTimes)
+        foreach(KeyValuePair<int, float> score in GameManager.completionTimes)
         {
             int levelIndex = score.Key;
-            String seconds = score.Value.ToString("F1") + "s\t\t" + "(" + "Radi: " + RADIS_BEST_TIMES[levelIndex] + "s)";
+            String seconds = score.Value.ToString("F1") + "s\t" + "(" + "Radi: " + RADIS_BEST_TIMES[levelIndex] + "s)";
 
             sb.AppendLine("Level " + levelIndex + ": " + seconds);
         }

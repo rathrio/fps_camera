@@ -8,7 +8,7 @@ public class GameManager : MonoBehaviour
     public float restartLevelDelay = 1f;
 
     // Hacky global storage for Demo purposes
-    public Dictionary<int, float> completionTimes = new Dictionary<int, float>();
+    public static Dictionary<int, float> completionTimes = new Dictionary<int, float>();
 
     void Awake()
     {

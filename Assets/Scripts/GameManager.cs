@@ -29,12 +29,59 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         // "R" for restarting active level
-        if (Input.GetKey(KeyCode.R))
+        if (Input.GetKeyDown(KeyCode.R))
         {
             RestartActiveLevel();
             return;
         }
 
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            LoadLevel(1);
+            return;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            LoadLevel(2);
+            return;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            LoadLevel(3);
+            return;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha4))
+        {
+            LoadLevel(4);
+            return;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha5))
+        {
+            LoadLevel(5);
+            return;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha6))
+        {
+            LoadLevel(6);
+            return;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha7))
+        {
+            LoadLevel(7);
+            return;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha8))
+        {
+            LoadLevel(8);
+            return;
+        }
     }
 
     public void CompleteLevel()
@@ -57,5 +104,10 @@ public class GameManager : MonoBehaviour
     public void RestartActiveLevel()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    void LoadLevel(int buildIndex)
+    {
+        SceneManager.LoadScene(buildIndex);
     }
 }

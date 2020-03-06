@@ -23,6 +23,15 @@ public class FallingPlatform : MonoBehaviour
         rb.velocity = new Vector3(0, -fallSpeed, 0);
     }
 
+    private void Update()
+    {
+        if (transform.position.y < -500f)
+        {
+            Destroy(gameObject);
+            return;
+        }
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (triggered || !other.CompareTag("Player"))

@@ -11,14 +11,14 @@ public class Credits : MonoBehaviour
 
     readonly static Dictionary<int, float> RADIS_BEST_TIMES = new Dictionary<int, float>
     {
-        { 1, 3.14f },
-        { 2, 3.14f },
-        { 3, 3.14f },
-        { 4, 3.14f },
-        { 5, 3.14f },
-        { 6, 3.14f },
-        { 7, 3.14f },
-        { 8, 3.14f },
+        { 1, 1.2f },
+        { 2, 4.1f },
+        { 3, 6.1f },
+        { 4, 3.2f },
+        { 5, 4.1f },
+        { 6, 1.7f },
+        { 7, 5.0f },
+        { 8, 12.4f },
     };
 
     // Start is called before the first frame update

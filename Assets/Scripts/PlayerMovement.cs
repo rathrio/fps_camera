@@ -176,8 +176,11 @@ public class PlayerMovement : MonoBehaviour
         Vector3 verticalMove = transform.forward * z;
         Vector3 move = horizontalMove + verticalMove;
 
-        Vector3 motion = move * actualSpeed * Time.deltaTime;
-        character.Move(motion);
+        Vector3 motion = move * (actualSpeed * Time.deltaTime);
+        if (IsGrounded)
+        {
+            character.Move(motion);
+        }
 
         // Faster crouch hack
         if (holdingCrouch && IsGrounded && !holdingJump)
@@ -192,6 +195,9 @@ public class PlayerMovement : MonoBehaviour
             {
                 // Regular jump: Increase upwards velocity
                 velocity.y = Mathf.Sqrt(jumpHeight * -2f * actualGravity);
+
+                velocity.x = motion.x * 500f;
+                velocity.z = motion.z * 500f;
 
                 // Sprint jump
                 if (holdingShift && !isCrouching)

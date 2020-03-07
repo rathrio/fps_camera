@@ -45,7 +45,7 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         float height = character.height;
-        
+
         _standingHeight = height;
         _crouchingHeight = height * crouchHeightFactor;
         _groundCheckCrouchOffset = (_standingHeight - _crouchingHeight) / 2;
@@ -54,6 +54,9 @@ public class PlayerMovement : MonoBehaviour
     void ResetVelocity()
     {
         _velocity.y = groundedOffset;
+        
+        _velocity.x = 0f;
+        _velocity.z = 0f;
     }
 
     void Land()
@@ -78,7 +81,8 @@ public class PlayerMovement : MonoBehaviour
         if (gameManager != null)
         {
             gameManager.LevelFailed();
-        } else
+        }
+        else
         {
             Debug.Log("Player has reached lower level boundaries");
         }
@@ -94,7 +98,8 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // Is our groundCheck transform intersecting with the ground layer?
-        IsGrounded = Physics.CheckSphere(groundCheck.position, groundCheckDistance, groundMask, QueryTriggerInteraction.Ignore);
+        IsGrounded = Physics.CheckSphere(groundCheck.position, groundCheckDistance, groundMask,
+            QueryTriggerInteraction.Ignore);
 
         // Is the camera intersecting with the ground layer? (Not super accurate, but does the job)
         _hittingCeiling = Physics.CheckSphere(mainCamera.position, 1f, groundMask, QueryTriggerInteraction.Ignore);
@@ -130,7 +135,8 @@ public class PlayerMovement : MonoBehaviour
             if (IsGrounded)
             {
                 Land();
-            } else // Falling down faster
+            }
+            else // Falling down faster
             {
                 actualGravity *= fallMultiplier;
             }
@@ -141,7 +147,7 @@ public class PlayerMovement : MonoBehaviour
         if (_velocity.y > 0 && !holdingJump)
         {
             actualGravity *= lowJumpMultiplier;
-        } 
+        }
 
         // Contact with ceiling while jumping -> Apply inverse y velocity
         if (!IsGrounded && (character.collisionFlags & CollisionFlags.Above) != 0 && _velocity.y > 0)
@@ -155,7 +161,8 @@ public class PlayerMovement : MonoBehaviour
         // Unity recognizes "w" as 1 and "s" as -1
         float z = Input.GetAxis("Vertical");
 
-        bool movingForward = z == 1 && x == 0; 
+        bool movingForward = z == 1 && x == 0;
+        bool noPlanarInput = z == 0 && x == 0;
 
         float actualSpeed = speed;
 
@@ -177,10 +184,7 @@ public class PlayerMovement : MonoBehaviour
         Vector3 move = horizontalMove + verticalMove;
 
         Vector3 motion = move * (actualSpeed * Time.deltaTime);
-        if (IsGrounded)
-        {
-            character.Move(motion);
-        }
+        character.Move(motion);
 
         // Faster crouch hack
         if (_holdingCrouch && IsGrounded && !holdingJump)
@@ -195,10 +199,7 @@ public class PlayerMovement : MonoBehaviour
             {
                 // Regular jump: Increase upwards velocity
                 _velocity.y = Mathf.Sqrt(jumpHeight * -2f * actualGravity);
-
-                _velocity.x = motion.x * 500f;
-                _velocity.z = motion.z * 500f;
-
+                
                 // Sprint jump
                 if (_holdingShift && !_isCrouching)
                 {
@@ -207,7 +208,6 @@ public class PlayerMovement : MonoBehaviour
                     // Decrease upwards velocity
                     _velocity.y *= 0.85f;
                 }
-
 
                 // Crouch jump
                 if (_holdingCrouch && !_hittingCeiling)

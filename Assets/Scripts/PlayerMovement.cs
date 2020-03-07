@@ -6,13 +6,11 @@ public class PlayerMovement : MonoBehaviour
     public Transform mainCamera;
 
     public float speed = 12f;
-    public float drag = 5f;
     public float gravity = -9.81f;
     public float gravityMultiplier = 8f;
     public float jumpHeight = 6f;
     public float groundedOffset = -2f;
     public float sprintSpeedFactor = 1.6f;
-    public float sprintJumpVelocityFactor = 90f;
     public float crouchHeightFactor = 0.5f;
     public float crouchJumpVelocityFactor = 1.5f;
     public float crouchSpeedFactor = 0.5f;
@@ -24,36 +22,38 @@ public class PlayerMovement : MonoBehaviour
     public float groundCheckDistance = 0.4f;
     public LayerMask groundMask;
 
-    float standingHeight;
-    float crouchingHeight;
+    float _standingHeight;
+    float _crouchingHeight;
 
     /**
      * How far the ground check needs be moved around when crouching
      */
-    float groundCheckCrouchOffset;
+    float _groundCheckCrouchOffset;
 
-    internal Vector3 velocity;
-    bool hittingCeiling;
-    bool holdingShift;
-    bool holdingCrouch;
-    bool isCrouching;
+    private Vector3 _velocity;
+    bool _hittingCeiling;
+    bool _holdingShift;
+    bool _holdingCrouch;
+    bool _isCrouching;
 
     public bool IsGrounded { get; private set; }
     public bool HasDoubleJumped { get; private set; }
-    public bool HasCrouchJumped { get; private set; }
-    public bool HasSprintJumped { get; private set; }
-    public bool HasReachedLowerLevelBoundaries { get; private set; }
+    bool HasCrouchJumped { get; set; }
+    bool HasSprintJumped { get; set; }
+    bool HasReachedLowerLevelBoundaries { get; set; }
 
     void Start()
     {
-        standingHeight = character.height;
-        crouchingHeight = character.height * crouchHeightFactor;
-        groundCheckCrouchOffset = (standingHeight - crouchingHeight) / 2;
+        float height = character.height;
+        
+        _standingHeight = height;
+        _crouchingHeight = height * crouchHeightFactor;
+        _groundCheckCrouchOffset = (_standingHeight - _crouchingHeight) / 2;
     }
 
     void ResetVelocity()
     {
-        velocity.y = groundedOffset;
+        _velocity.y = groundedOffset;
     }
 
     void Land()
@@ -97,34 +97,34 @@ public class PlayerMovement : MonoBehaviour
         IsGrounded = Physics.CheckSphere(groundCheck.position, groundCheckDistance, groundMask, QueryTriggerInteraction.Ignore);
 
         // Is the camera intersecting with the ground layer? (Not super accurate, but does the job)
-        hittingCeiling = Physics.CheckSphere(mainCamera.position, 1f, groundMask, QueryTriggerInteraction.Ignore);
+        _hittingCeiling = Physics.CheckSphere(mainCamera.position, 1f, groundMask, QueryTriggerInteraction.Ignore);
 
-        holdingShift = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
-        holdingCrouch = Input.GetKey(KeyCode.LeftControl);
+        _holdingShift = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+        _holdingCrouch = Input.GetKey(KeyCode.LeftControl);
         bool pressedJump = Input.GetButtonDown("Jump");
         bool holdingJump = Input.GetButton("Jump");
 
-        bool standingBlockedByCeiling = isCrouching && hittingCeiling && !holdingCrouch;
+        bool standingBlockedByCeiling = _isCrouching && _hittingCeiling && !_holdingCrouch;
 
         float actualGravity = gravity * gravityMultiplier;
 
         // Crouching
-        if (holdingCrouch && !isCrouching)
+        if (_holdingCrouch && !_isCrouching)
         {
-            character.height = crouchingHeight;
-            groundCheck.Translate(Vector3.up * groundCheckCrouchOffset);
-            isCrouching = true;
+            character.height = _crouchingHeight;
+            groundCheck.Translate(Vector3.up * _groundCheckCrouchOffset);
+            _isCrouching = true;
         }
 
         // Stand back up
-        if (!holdingCrouch && isCrouching && !hittingCeiling)
+        if (!_holdingCrouch && _isCrouching && !_hittingCeiling)
         {
-            character.height = standingHeight;
-            groundCheck.Translate(Vector3.down * groundCheckCrouchOffset);
-            isCrouching = false;
+            character.height = _standingHeight;
+            groundCheck.Translate(Vector3.down * _groundCheckCrouchOffset);
+            _isCrouching = false;
         }
 
-        if (velocity.y < 0)
+        if (_velocity.y < 0)
         {
             // Contact with floor
             if (IsGrounded)
@@ -138,15 +138,15 @@ public class PlayerMovement : MonoBehaviour
 
         // Apply more gravity when moving upwards and not holding the jump button
         // -> Low jump when only tapping the space bar.
-        if (velocity.y > 0 && !holdingJump)
+        if (_velocity.y > 0 && !holdingJump)
         {
             actualGravity *= lowJumpMultiplier;
         } 
 
         // Contact with ceiling while jumping -> Apply inverse y velocity
-        if (!IsGrounded && (character.collisionFlags & CollisionFlags.Above) != 0 && velocity.y > 0)
+        if (!IsGrounded && (character.collisionFlags & CollisionFlags.Above) != 0 && _velocity.y > 0)
         {
-            velocity.y = -velocity.y * 0.5f;
+            _velocity.y = -_velocity.y * 0.5f;
         }
 
         // Unity recognizes "a" as 1 and "d" as -1
@@ -160,13 +160,13 @@ public class PlayerMovement : MonoBehaviour
         float actualSpeed = speed;
 
         // Sprint speed
-        if (movingForward && (HasSprintJumped || (holdingShift && IsGrounded && !isCrouching)))
+        if (movingForward && (HasSprintJumped || (_holdingShift && IsGrounded && !_isCrouching)))
         {
             actualSpeed *= sprintSpeedFactor;
         }
 
         // Decrease speed when crouching or when in the air after crouch jumping
-        if (isCrouching && IsGrounded || HasCrouchJumped)
+        if (_isCrouching && IsGrounded || HasCrouchJumped)
         {
             actualSpeed *= crouchSpeedFactor;
         }
@@ -183,7 +183,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // Faster crouch hack
-        if (holdingCrouch && IsGrounded && !holdingJump)
+        if (_holdingCrouch && IsGrounded && !holdingJump)
         {
             actualGravity *= 10;
         }
@@ -194,26 +194,26 @@ public class PlayerMovement : MonoBehaviour
             if (IsGrounded)
             {
                 // Regular jump: Increase upwards velocity
-                velocity.y = Mathf.Sqrt(jumpHeight * -2f * actualGravity);
+                _velocity.y = Mathf.Sqrt(jumpHeight * -2f * actualGravity);
 
-                velocity.x = motion.x * 500f;
-                velocity.z = motion.z * 500f;
+                _velocity.x = motion.x * 500f;
+                _velocity.z = motion.z * 500f;
 
                 // Sprint jump
-                if (holdingShift && !isCrouching)
+                if (_holdingShift && !_isCrouching)
                 {
                     HasSprintJumped = true;
 
                     // Decrease upwards velocity
-                    velocity.y *= 0.85f;
+                    _velocity.y *= 0.85f;
                 }
 
 
                 // Crouch jump
-                if (holdingCrouch && !hittingCeiling)
+                if (_holdingCrouch && !_hittingCeiling)
                 {
                     // Increase upwards velocity
-                    velocity.y *= crouchJumpVelocityFactor;
+                    _velocity.y *= crouchJumpVelocityFactor;
 
                     // In order to decrease forwards motion
                     HasCrouchJumped = true;
@@ -227,14 +227,14 @@ public class PlayerMovement : MonoBehaviour
                 HasSprintJumped = false;
                 HasDoubleJumped = true;
 
-                velocity.y = Mathf.Sqrt(jumpHeight * -2f * actualGravity);
+                _velocity.y = Mathf.Sqrt(jumpHeight * -2f * actualGravity);
             }
         }
 
         // Gravity
-        velocity.y += actualGravity * Time.deltaTime;
+        _velocity.y += actualGravity * Time.deltaTime;
 
         // Apply velocity
-        character.Move(velocity * Time.deltaTime);
+        character.Move(_velocity * Time.deltaTime);
     }
 }

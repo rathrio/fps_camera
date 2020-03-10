@@ -33,12 +33,12 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 _upwardsVelocity;
     private Vector3 _forwardVelocity = new Vector3(0f, 0f, 0f);
     
-    bool _hittingCeiling;
     bool _holdingShift;
     bool _holdingCrouch;
     bool _isCrouching;
 
     public bool IsGrounded { get; private set; }
+    public bool HittingCeiling { get; private set; }
     public bool HasDoubleJumped { get; private set; }
     bool HasJumped { get; set; }
     bool HasCrouchJumped { get; set; }
@@ -105,15 +105,15 @@ public class PlayerMovement : MonoBehaviour
         IsGrounded = Physics.CheckSphere(groundCheck.position, groundCheckDistance, groundMask,
             QueryTriggerInteraction.Ignore);
 
-        // Is the camera intersecting with the ground layer? (Not super accurate, but does the job)
-        _hittingCeiling = Physics.CheckSphere(mainCamera.position, 1f, groundMask, QueryTriggerInteraction.Ignore);
+        // Is the camera intersecting with the ground layer? (Not super accurate, but does the job for the demo)
+        HittingCeiling = Physics.CheckSphere(mainCamera.position, 1f, groundMask, QueryTriggerInteraction.Ignore);
 
         _holdingShift = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
         _holdingCrouch = Input.GetKey(KeyCode.LeftControl);
         bool pressedJump = Input.GetButtonDown("Jump");
         bool holdingJump = Input.GetButton("Jump");
 
-        bool standingBlockedByCeiling = _isCrouching && _hittingCeiling && !_holdingCrouch;
+        bool standingBlockedByCeiling = _isCrouching && HittingCeiling && !_holdingCrouch;
 
         float actualGravity = gravity * gravityMultiplier;
 
@@ -126,7 +126,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // Stand back up
-        if (!_holdingCrouch && _isCrouching && !_hittingCeiling)
+        if (!_holdingCrouch && _isCrouching && !HittingCeiling)
         {
             character.height = _standingHeight;
             groundCheck.Translate(Vector3.down * _groundCheckCrouchOffset);
@@ -135,7 +135,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (_upwardsVelocity.y < groundedOffset)
         {
-            // Contact with floor
+            // Contact with floor. TODO: Find a way to not call this non-stop on the ground.
             if (IsGrounded)
             {
                 Land();
@@ -156,7 +156,6 @@ public class PlayerMovement : MonoBehaviour
         // Contact with ceiling while jumping -> Apply inverse y velocity
         if (!IsGrounded && (character.collisionFlags & CollisionFlags.Above) != 0 && _upwardsVelocity.y > 0)
         {
-            // _upwardsVelocity.y = -_upwardsVelocity.y * 0.5f;
             _upwardsVelocity.y = 0f;
         }
 
@@ -189,9 +188,15 @@ public class PlayerMovement : MonoBehaviour
         Vector3 horizontalMove = transform.right * x;
         Vector3 verticalMove = transform.forward * z;
         Vector3 move = horizontalMove + verticalMove;
-
         Vector3 motion = move * (actualSpeed * Time.deltaTime);
-        character.Move(motion);
+
+        bool collidedSides = (character.collisionFlags & CollisionFlags.Sides) != 0;
+        Debug.Log(collidedSides);
+        bool preventMovement = !IsGrounded && collidedSides;
+        if (!preventMovement)
+        {
+            character.Move(motion);
+        }
 
         // Faster crouch hack
         if (_holdingCrouch && IsGrounded && !holdingJump)
@@ -216,7 +221,7 @@ public class PlayerMovement : MonoBehaviour
                 }
 
                 // Crouch jump
-                if (_holdingCrouch && !_hittingCeiling)
+                if (_holdingCrouch && !HittingCeiling)
                 {
                     _upwardsVelocity.y *= crouchJumpVelocityFactor;
                     // In order to decrease forwards motion

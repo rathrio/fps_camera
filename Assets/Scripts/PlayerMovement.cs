@@ -58,8 +58,8 @@ public class PlayerMovement : MonoBehaviour
     {
         _upwardsVelocity.y = groundedOffset;
         
-        _upwardsVelocity.x = 0f;
-        _upwardsVelocity.z = 0f;
+        _forwardVelocity.x = 0f;
+        _forwardVelocity.z = 0f;
     }
 
     void Land()
@@ -168,7 +168,7 @@ public class PlayerMovement : MonoBehaviour
         bool movingForward = z == 1 && x == 0;
         
         // No horizontal or vertical input
-        bool noInput = z == 0 && x == 0;
+        bool hasMovementInput = z != 0 || x != 0;
 
         float actualSpeed = speed;
 
@@ -189,13 +189,14 @@ public class PlayerMovement : MonoBehaviour
         Vector3 verticalMove = transform.forward * z;
         Vector3 move = horizontalMove + verticalMove;
         Vector3 motion = move * (actualSpeed * Time.deltaTime);
-
-        bool collidedSides = (character.collisionFlags & CollisionFlags.Sides) != 0;
-        Debug.Log(collidedSides);
-        bool preventMovement = !IsGrounded && collidedSides;
-        if (!preventMovement)
+        
+        if (IsGrounded)
         {
             character.Move(motion);
+        }
+        else
+        {
+            character.Move(motion * 0.2f);
         }
 
         // Faster crouch hack
@@ -211,6 +212,12 @@ public class PlayerMovement : MonoBehaviour
             {
                 // Regular jump: Increase upwards velocity
                 _upwardsVelocity.y = Mathf.Sqrt(jumpHeight * -2f * actualGravity);
+                if (hasMovementInput)
+                {
+                    _forwardVelocity.x = move.x * actualSpeed * 0.9f;
+                    _forwardVelocity.z = move.z * actualSpeed * 0.9f;
+                }
+                
                 HasJumped = true;
                 
                 // Sprint jump
@@ -237,6 +244,12 @@ public class PlayerMovement : MonoBehaviour
                 HasSprintJumped = false;
 
                 _upwardsVelocity.y = Mathf.Sqrt(jumpHeight * -2f * actualGravity);
+                if (hasMovementInput)
+                {
+                    _forwardVelocity.x = move.x * actualSpeed * 0.7f;
+                    _forwardVelocity.z = move.z * actualSpeed * 0.7f;
+                }
+                
                 HasDoubleJumped = true;
             }
         }

@@ -30,7 +30,9 @@ public class PlayerMovement : MonoBehaviour
      */
     float _groundCheckCrouchOffset;
 
-    private Vector3 _velocity;
+    private Vector3 _upwardsVelocity;
+    private Vector3 _forwardVelocity = new Vector3(0f, 0f, 0f);
+    
     bool _hittingCeiling;
     bool _holdingShift;
     bool _holdingCrouch;
@@ -38,6 +40,7 @@ public class PlayerMovement : MonoBehaviour
 
     public bool IsGrounded { get; private set; }
     public bool HasDoubleJumped { get; private set; }
+    bool HasJumped { get; set; }
     bool HasCrouchJumped { get; set; }
     bool HasSprintJumped { get; set; }
     bool HasReachedLowerLevelBoundaries { get; set; }
@@ -53,15 +56,16 @@ public class PlayerMovement : MonoBehaviour
 
     void ResetVelocity()
     {
-        _velocity.y = groundedOffset;
+        _upwardsVelocity.y = groundedOffset;
         
-        _velocity.x = 0f;
-        _velocity.z = 0f;
+        _upwardsVelocity.x = 0f;
+        _upwardsVelocity.z = 0f;
     }
 
     void Land()
     {
         ResetVelocity();
+        HasJumped = false;
         HasDoubleJumped = false;
         HasCrouchJumped = false;
         HasSprintJumped = false;
@@ -129,7 +133,7 @@ public class PlayerMovement : MonoBehaviour
             _isCrouching = false;
         }
 
-        if (_velocity.y < 0)
+        if (_upwardsVelocity.y < groundedOffset)
         {
             // Contact with floor
             if (IsGrounded)
@@ -144,15 +148,16 @@ public class PlayerMovement : MonoBehaviour
 
         // Apply more gravity when moving upwards and not holding the jump button
         // -> Low jump when only tapping the space bar.
-        if (_velocity.y > 0 && !holdingJump)
+        if (_upwardsVelocity.y > 0 && !holdingJump)
         {
             actualGravity *= lowJumpMultiplier;
         }
 
         // Contact with ceiling while jumping -> Apply inverse y velocity
-        if (!IsGrounded && (character.collisionFlags & CollisionFlags.Above) != 0 && _velocity.y > 0)
+        if (!IsGrounded && (character.collisionFlags & CollisionFlags.Above) != 0 && _upwardsVelocity.y > 0)
         {
-            _velocity.y = -_velocity.y * 0.5f;
+            // _upwardsVelocity.y = -_upwardsVelocity.y * 0.5f;
+            _upwardsVelocity.y = 0f;
         }
 
         // Unity recognizes "a" as 1 and "d" as -1
@@ -162,7 +167,9 @@ public class PlayerMovement : MonoBehaviour
         float z = Input.GetAxis("Vertical");
 
         bool movingForward = z == 1 && x == 0;
-        bool noPlanarInput = z == 0 && x == 0;
+        
+        // No horizontal or vertical input
+        bool noInput = z == 0 && x == 0;
 
         float actualSpeed = speed;
 
@@ -198,23 +205,20 @@ public class PlayerMovement : MonoBehaviour
             if (IsGrounded)
             {
                 // Regular jump: Increase upwards velocity
-                _velocity.y = Mathf.Sqrt(jumpHeight * -2f * actualGravity);
+                _upwardsVelocity.y = Mathf.Sqrt(jumpHeight * -2f * actualGravity);
+                HasJumped = true;
                 
                 // Sprint jump
                 if (_holdingShift && !_isCrouching)
                 {
+                    _upwardsVelocity.y *= 0.85f;
                     HasSprintJumped = true;
-
-                    // Decrease upwards velocity
-                    _velocity.y *= 0.85f;
                 }
 
                 // Crouch jump
                 if (_holdingCrouch && !_hittingCeiling)
                 {
-                    // Increase upwards velocity
-                    _velocity.y *= crouchJumpVelocityFactor;
-
+                    _upwardsVelocity.y *= crouchJumpVelocityFactor;
                     // In order to decrease forwards motion
                     HasCrouchJumped = true;
                 }
@@ -223,18 +227,21 @@ public class PlayerMovement : MonoBehaviour
             // Not grounded -> Double jump
             else if (!HasDoubleJumped)
             {
+                HasJumped = false;
                 HasCrouchJumped = false;
                 HasSprintJumped = false;
-                HasDoubleJumped = true;
 
-                _velocity.y = Mathf.Sqrt(jumpHeight * -2f * actualGravity);
+                _upwardsVelocity.y = Mathf.Sqrt(jumpHeight * -2f * actualGravity);
+                HasDoubleJumped = true;
             }
         }
 
         // Gravity
-        _velocity.y += actualGravity * Time.deltaTime;
+        _upwardsVelocity.y += actualGravity * Time.deltaTime;
 
+        Vector3 velocity = _upwardsVelocity + _forwardVelocity;
+        
         // Apply velocity
-        character.Move(_velocity * Time.deltaTime);
+        character.Move(velocity * Time.deltaTime);
     }
 }

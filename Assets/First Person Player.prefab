@@ -275,13 +275,11 @@ MonoBehaviour:
   character: {fileID: 495842974268519161}
   mainCamera: {fileID: 495842973605257248}
   speed: 12
-  drag: 5
   gravity: -9.81
   gravityMultiplier: 8
   jumpHeight: 6
-  groundedOffset: -1
+  groundedOffset: -2
   sprintSpeedFactor: 1.6
-  sprintJumpVelocityFactor: 90
   crouchHeightFactor: 0.5
   crouchJumpVelocityFactor: 1.5
   crouchSpeedFactor: 0.5

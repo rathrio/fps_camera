@@ -196,7 +196,7 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            character.Move(motion * 0.2f);
+            character.Move(motion * 0.3f);
         }
 
         // Faster crouch hack
@@ -214,8 +214,8 @@ public class PlayerMovement : MonoBehaviour
                 _upwardsVelocity.y = Mathf.Sqrt(jumpHeight * -2f * actualGravity);
                 if (hasMovementInput)
                 {
-                    _forwardVelocity.x = move.x * actualSpeed * 0.9f;
-                    _forwardVelocity.z = move.z * actualSpeed * 0.9f;
+                    _forwardVelocity.x = move.x * actualSpeed * 0.8f;
+                    _forwardVelocity.z = move.z * actualSpeed * 0.8f;
                 }
                 
                 HasJumped = true;

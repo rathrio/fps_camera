@@ -189,6 +189,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: First Person Player
       objectReference: {fileID: 0}
+    - target: {fileID: 8750117640005916632, guid: 1a6937a57c6d1454d809458cb67270c8,
+        type: 3}
+      propertyPath: m_DefaultControlScheme
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8750117640005916632, guid: 1a6937a57c6d1454d809458cb67270c8,
+        type: 3}
+      propertyPath: m_NeverAutoSwitchControlSchemes
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1a6937a57c6d1454d809458cb67270c8, type: 3}
 --- !u!1001 &266979142

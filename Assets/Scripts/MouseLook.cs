@@ -1,12 +1,15 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Users;
 
 public class MouseLook : MonoBehaviour
 {
-    public float mouseSensitivity = 100f;
+    public float mouseSensitivity = 150f;
 
     public Transform playerBody;
+
+    public PlayerInput playerInput;
 
     /**
      * Rotation AROUND the x axis.

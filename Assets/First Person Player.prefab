@@ -98,6 +98,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mouseSensitivity: 150
   playerBody: {fileID: 495842974268519160}
+  playerInput: {fileID: 8750117640005916632}
 --- !u!1 &495842973681061414
 GameObject:
   m_ObjectHideFlags: 0
@@ -392,7 +393,7 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 9846a845-7d8a-40c2-a04a-d8264f230efb
     m_ActionName: Gameplay/Sprint[/Keyboard/shift]
-  m_NeverAutoSwitchControlSchemes: 0
+  m_NeverAutoSwitchControlSchemes: 1
   m_DefaultControlScheme: 
   m_DefaultActionMap: Gameplay
   m_SplitScreenIndex: -1

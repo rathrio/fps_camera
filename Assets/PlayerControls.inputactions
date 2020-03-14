@@ -50,7 +50,7 @@
                 {
                     "name": "",
                     "id": "735ab849-147e-4e8c-89dc-9004591e54e9",
-                    "path": "<Gamepad>/leftShoulder",
+                    "path": "<Gamepad>/rightShoulder",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -72,7 +72,7 @@
                 {
                     "name": "",
                     "id": "26d744a0-335a-4ef5-a032-72c361460360",
-                    "path": "<Gamepad>/leftTrigger",
+                    "path": "<Gamepad>/rightTrigger",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -93,8 +93,19 @@
                 },
                 {
                     "name": "",
+                    "id": "864e29a2-7e46-471e-8c4f-66c2a2d2d813",
+                    "path": "<Keyboard>/capsLock",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Crouch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "b8a1e943-2f61-4846-9d01-a8c9446151f2",
-                    "path": "<Gamepad>/rightShoulder",
+                    "path": "<Gamepad>/leftShoulder",
                     "interactions": "",
                     "processors": "",
                     "groups": "",

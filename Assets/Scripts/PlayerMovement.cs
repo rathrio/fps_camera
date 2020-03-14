@@ -34,6 +34,11 @@ public class PlayerMovement : MonoBehaviour
 
     private Vector3 upwardsVelocity;
     private Vector3 forwardVelocity = new Vector3(0f, 0f, 0f);
+
+    // Left/right input
+    float x;
+    // Forwards/backwards input
+    float z;
     
     bool holdingShift;
     bool holdingCrouch;
@@ -49,12 +54,23 @@ public class PlayerMovement : MonoBehaviour
 
     public void Move(InputAction.CallbackContext context)
     {
-        Debug.Log(context);
+        Vector2 v = context.ReadValue<Vector2>();
+        
+        x = v.x;
+        z = v.y;
     }
     
     public void Crouch(InputAction.CallbackContext context)
     {
-        Debug.Log(context);
+        switch (context.phase)
+        {
+            case InputActionPhase.Performed:
+                holdingCrouch = true;
+                break;
+            case InputActionPhase.Canceled:
+                holdingCrouch = false;
+                break;
+        }
     }
     
     public void Jump(InputAction.CallbackContext context)
@@ -64,7 +80,15 @@ public class PlayerMovement : MonoBehaviour
     
     public void Sprint(InputAction.CallbackContext context)
     {
-        Debug.Log(context);
+        switch (context.phase)
+        {
+            case InputActionPhase.Performed:
+                holdingShift = true;
+                break;
+            case InputActionPhase.Canceled:
+                holdingShift = false;
+                break;
+        }
     }
     
     void Start()
@@ -130,8 +154,6 @@ public class PlayerMovement : MonoBehaviour
         // Is the camera intersecting with the ground layer? (Not super accurate, but does the job for the demo)
         HittingCeiling = Physics.CheckSphere(mainCamera.position, 1f, groundMask, QueryTriggerInteraction.Ignore);
 
-        holdingShift = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
-        holdingCrouch = Input.GetKey(KeyCode.LeftControl);
         bool pressedJump = Input.GetButtonDown("Jump");
         bool holdingJump = Input.GetButton("Jump");
 
@@ -181,11 +203,11 @@ public class PlayerMovement : MonoBehaviour
             upwardsVelocity.y = 0f;
         }
 
-        // Unity recognizes "a" as 1 and "d" as -1
-        float x = Input.GetAxis("Horizontal");
-
-        // Unity recognizes "w" as 1 and "s" as -1
-        float z = Input.GetAxis("Vertical");
+        // // A/D
+        // float x = Input.GetAxis("Horizontal");
+        //
+        // // W/S
+        // float z = Input.GetAxis("Vertical");
 
         bool movingForward = z == 1 && Math.Abs(x) < 0.3f;
         

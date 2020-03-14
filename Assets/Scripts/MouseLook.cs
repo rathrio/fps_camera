@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class MouseLook : MonoBehaviour
@@ -16,7 +17,15 @@ public class MouseLook : MonoBehaviour
 
     public void Rotate(InputAction.CallbackContext context)
     {
-        input = context.ReadValue<Vector2>();
+        switch (context.phase)
+        {
+            case InputActionPhase.Performed:
+                input = context.ReadValue<Vector2>();
+                break;
+            case InputActionPhase.Canceled:
+                input = Vector2.zero;
+                break;
+        }
     }
 
     // Start is called before the first frame update

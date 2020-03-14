@@ -163,7 +163,8 @@ public class PlayerMovement : MonoBehaviour
         // Is the camera intersecting with the ground layer? (Not super accurate, but does the job for the demo)
         HittingCeiling = Physics.CheckSphere(mainCamera.position, 1f, groundMask, QueryTriggerInteraction.Ignore);
 
-        bool pressedJump = Gamepad.current.rightShoulder.wasPressedThisFrame;
+        bool pressedJump = Gamepad.current.rightShoulder.wasPressedThisFrame ||
+                           Keyboard.current.spaceKey.wasPressedThisFrame;
 
         bool standingBlockedByCeiling = isCrouching && HittingCeiling && !holdingCrouch;
 
@@ -248,7 +249,7 @@ public class PlayerMovement : MonoBehaviour
         // Faster crouch hack
         if (holdingCrouch && IsGrounded && !holdingJump)
         {
-            actualGravity *= 10;
+            actualGravity *= 5;
         }
 
         // Jumping

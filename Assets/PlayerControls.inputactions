@@ -206,7 +206,7 @@
                     "id": "53eaaef2-8e68-43ab-b184-c2056ba75aa5",
                     "path": "<Mouse>/delta",
                     "interactions": "",
-                    "processors": "",
+                    "processors": "Scale(factor=0.0001)",
                     "groups": "",
                     "action": "Rotate",
                     "isComposite": false,

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
@@ -23,20 +24,20 @@ public class PlayerMovement : MonoBehaviour
     public float groundCheckDistance = 0.4f;
     public LayerMask groundMask;
 
-    float _standingHeight;
-    float _crouchingHeight;
+    float standingHeight;
+    float crouchingHeight;
 
     /**
      * How far the ground check needs be moved around when crouching
      */
-    float _groundCheckCrouchOffset;
+    float groundCheckCrouchOffset;
 
-    private Vector3 _upwardsVelocity;
-    private Vector3 _forwardVelocity = new Vector3(0f, 0f, 0f);
+    private Vector3 upwardsVelocity;
+    private Vector3 forwardVelocity = new Vector3(0f, 0f, 0f);
     
-    bool _holdingShift;
-    bool _holdingCrouch;
-    bool _isCrouching;
+    bool holdingShift;
+    bool holdingCrouch;
+    bool isCrouching;
 
     public bool IsGrounded { get; private set; }
     public bool HittingCeiling { get; private set; }
@@ -46,28 +47,41 @@ public class PlayerMovement : MonoBehaviour
     bool HasSprintJumped { get; set; }
     bool HasReachedLowerLevelBoundaries { get; set; }
 
-    PlayerControls controls;
-
-    void Awake()
+    public void Move(InputAction.CallbackContext context)
     {
-        controls = new PlayerControls();
+        Debug.Log(context);
     }
-
+    
+    public void Crouch(InputAction.CallbackContext context)
+    {
+        Debug.Log(context);
+    }
+    
+    public void Jump(InputAction.CallbackContext context)
+    {
+        Debug.Log(context);
+    }
+    
+    public void Sprint(InputAction.CallbackContext context)
+    {
+        Debug.Log(context);
+    }
+    
     void Start()
     {
         float height = character.height;
 
-        _standingHeight = height;
-        _crouchingHeight = height * crouchHeightFactor;
-        _groundCheckCrouchOffset = (_standingHeight - _crouchingHeight) / 2;
+        standingHeight = height;
+        crouchingHeight = height * crouchHeightFactor;
+        groundCheckCrouchOffset = (standingHeight - crouchingHeight) / 2;
     }
 
     void ResetVelocity()
     {
-        _upwardsVelocity.y = groundedOffset;
+        upwardsVelocity.y = groundedOffset;
         
-        _forwardVelocity.x = 0f;
-        _forwardVelocity.z = 0f;
+        forwardVelocity.x = 0f;
+        forwardVelocity.z = 0f;
     }
 
     void Land()
@@ -116,32 +130,32 @@ public class PlayerMovement : MonoBehaviour
         // Is the camera intersecting with the ground layer? (Not super accurate, but does the job for the demo)
         HittingCeiling = Physics.CheckSphere(mainCamera.position, 1f, groundMask, QueryTriggerInteraction.Ignore);
 
-        _holdingShift = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
-        _holdingCrouch = Input.GetKey(KeyCode.LeftControl);
+        holdingShift = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+        holdingCrouch = Input.GetKey(KeyCode.LeftControl);
         bool pressedJump = Input.GetButtonDown("Jump");
         bool holdingJump = Input.GetButton("Jump");
 
-        bool standingBlockedByCeiling = _isCrouching && HittingCeiling && !_holdingCrouch;
+        bool standingBlockedByCeiling = isCrouching && HittingCeiling && !holdingCrouch;
 
         float actualGravity = gravity * gravityMultiplier;
 
         // Crouching
-        if (_holdingCrouch && !_isCrouching)
+        if (holdingCrouch && !isCrouching)
         {
-            character.height = _crouchingHeight;
-            groundCheck.Translate(Vector3.up * _groundCheckCrouchOffset);
-            _isCrouching = true;
+            character.height = crouchingHeight;
+            groundCheck.Translate(Vector3.up * groundCheckCrouchOffset);
+            isCrouching = true;
         }
 
         // Stand back up
-        if (!_holdingCrouch && _isCrouching && !HittingCeiling)
+        if (!holdingCrouch && isCrouching && !HittingCeiling)
         {
-            character.height = _standingHeight;
-            groundCheck.Translate(Vector3.down * _groundCheckCrouchOffset);
-            _isCrouching = false;
+            character.height = standingHeight;
+            groundCheck.Translate(Vector3.down * groundCheckCrouchOffset);
+            isCrouching = false;
         }
 
-        if (_upwardsVelocity.y < groundedOffset)
+        if (upwardsVelocity.y < groundedOffset)
         {
             // Contact with floor. TODO: Find a way to not call this non-stop on the ground.
             if (IsGrounded)
@@ -156,15 +170,15 @@ public class PlayerMovement : MonoBehaviour
 
         // Apply more gravity when moving upwards and not holding the jump button
         // -> Low jump when only tapping the space bar.
-        if (_upwardsVelocity.y > 0 && !holdingJump)
+        if (upwardsVelocity.y > 0 && !holdingJump)
         {
             actualGravity *= lowJumpMultiplier;
         }
 
         // Contact with ceiling while jumping -> Apply inverse y velocity
-        if (!IsGrounded && (character.collisionFlags & CollisionFlags.Above) != 0 && _upwardsVelocity.y > 0)
+        if (!IsGrounded && (character.collisionFlags & CollisionFlags.Above) != 0 && upwardsVelocity.y > 0)
         {
-            _upwardsVelocity.y = 0f;
+            upwardsVelocity.y = 0f;
         }
 
         // Unity recognizes "a" as 1 and "d" as -1
@@ -173,7 +187,7 @@ public class PlayerMovement : MonoBehaviour
         // Unity recognizes "w" as 1 and "s" as -1
         float z = Input.GetAxis("Vertical");
 
-        bool movingForward = z == 1 && x == 0;
+        bool movingForward = z == 1 && Math.Abs(x) < 0.3f;
         
         // No horizontal or vertical input
         bool hasMovementInput = z != 0 || x != 0;
@@ -181,13 +195,13 @@ public class PlayerMovement : MonoBehaviour
         float actualSpeed = speed;
 
         // Sprint speed
-        if (movingForward && (HasSprintJumped || (_holdingShift && IsGrounded && !_isCrouching)))
+        if (movingForward && (HasSprintJumped || (holdingShift && IsGrounded && !isCrouching)))
         {
             actualSpeed *= sprintSpeedFactor;
         }
 
         // Decrease speed when crouching or when in the air after crouch jumping
-        if (_isCrouching && IsGrounded || HasCrouchJumped)
+        if (isCrouching && IsGrounded || HasCrouchJumped)
         {
             actualSpeed *= crouchSpeedFactor;
         }
@@ -208,7 +222,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // Faster crouch hack
-        if (_holdingCrouch && IsGrounded && !holdingJump)
+        if (holdingCrouch && IsGrounded && !holdingJump)
         {
             actualGravity *= 10;
         }
@@ -219,26 +233,26 @@ public class PlayerMovement : MonoBehaviour
             if (IsGrounded)
             {
                 // Regular jump: Increase upwards velocity
-                _upwardsVelocity.y = Mathf.Sqrt(jumpHeight * -2f * actualGravity);
+                upwardsVelocity.y = Mathf.Sqrt(jumpHeight * -2f * actualGravity);
                 if (hasMovementInput)
                 {
-                    _forwardVelocity.x = move.x * actualSpeed * 0.8f;
-                    _forwardVelocity.z = move.z * actualSpeed * 0.8f;
+                    forwardVelocity.x = move.x * actualSpeed * 0.8f;
+                    forwardVelocity.z = move.z * actualSpeed * 0.8f;
                 }
                 
                 HasJumped = true;
                 
                 // Sprint jump
-                if (_holdingShift && !_isCrouching)
+                if (holdingShift && !isCrouching)
                 {
-                    _upwardsVelocity.y *= 0.85f;
+                    upwardsVelocity.y *= 0.85f;
                     HasSprintJumped = true;
                 }
 
                 // Crouch jump
-                if (_holdingCrouch && !HittingCeiling)
+                if (holdingCrouch && !HittingCeiling)
                 {
-                    _upwardsVelocity.y *= crouchJumpVelocityFactor;
+                    upwardsVelocity.y *= crouchJumpVelocityFactor;
                     // In order to decrease forwards motion
                     HasCrouchJumped = true;
                 }
@@ -251,11 +265,11 @@ public class PlayerMovement : MonoBehaviour
                 HasCrouchJumped = false;
                 HasSprintJumped = false;
 
-                _upwardsVelocity.y = Mathf.Sqrt(jumpHeight * -2f * actualGravity);
+                upwardsVelocity.y = Mathf.Sqrt(jumpHeight * -2f * actualGravity);
                 if (hasMovementInput)
                 {
-                    _forwardVelocity.x = move.x * actualSpeed * 0.7f;
-                    _forwardVelocity.z = move.z * actualSpeed * 0.7f;
+                    forwardVelocity.x = move.x * actualSpeed * 0.7f;
+                    forwardVelocity.z = move.z * actualSpeed * 0.7f;
                 }
                 
                 HasDoubleJumped = true;
@@ -263,9 +277,9 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // Gravity
-        _upwardsVelocity.y += actualGravity * Time.deltaTime;
+        upwardsVelocity.y += actualGravity * Time.deltaTime;
 
-        Vector3 velocity = _upwardsVelocity + _forwardVelocity;
+        Vector3 velocity = upwardsVelocity + forwardVelocity;
         
         // Apply velocity
         character.Move(velocity * Time.deltaTime);

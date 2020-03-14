@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class MouseLook : MonoBehaviour
 {
@@ -10,6 +11,11 @@ public class MouseLook : MonoBehaviour
      * Rotation AROUND the x axis.
      */
     float xRotation = 0f;
+
+    public void Rotate(InputAction.CallbackContext context)
+    {
+        Debug.Log(context);
+    }
 
     // Start is called before the first frame update
     void Start()

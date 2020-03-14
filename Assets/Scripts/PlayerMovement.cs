@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -44,6 +45,13 @@ public class PlayerMovement : MonoBehaviour
     bool HasCrouchJumped { get; set; }
     bool HasSprintJumped { get; set; }
     bool HasReachedLowerLevelBoundaries { get; set; }
+
+    PlayerControls controls;
+
+    void Awake()
+    {
+        controls = new PlayerControls();
+    }
 
     void Start()
     {

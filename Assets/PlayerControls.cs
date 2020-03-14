@@ -85,7 +85,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""26d744a0-335a-4ef5-a032-72c361460360"",
-                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -216,10 +216,10 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""53eaaef2-8e68-43ab-b184-c2056ba75aa5"",
-                    ""path"": ""<Mouse>/delta"",
+                    ""id"": ""fa1fb8ef-6a98-4211-b12b-ed92758b36a8"",
+                    ""path"": ""<Pointer>/delta"",
                     ""interactions"": """",
-                    ""processors"": ""Scale(factor=0.0001)"",
+                    ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Rotate"",
                     ""isComposite"": false,

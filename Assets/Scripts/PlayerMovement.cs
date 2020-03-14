@@ -1,12 +1,13 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using XInputDotNetPure;
 
 public class PlayerMovement : MonoBehaviour
 {
     public CharacterController character;
     public Transform mainCamera;
-
+    
     public float speed = 12f;
     public float gravity = -9.81f;
     public float gravityMultiplier = 8f;
@@ -36,9 +37,9 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 forwardVelocity = new Vector3(0f, 0f, 0f);
 
     // Left/right input
-    float x;
+    float horizontal;
     // Forwards/backwards input
-    float z;
+    float forward;
     
     bool holdingShift;
     bool holdingCrouch;
@@ -57,8 +58,8 @@ public class PlayerMovement : MonoBehaviour
     {
         Vector2 v = context.ReadValue<Vector2>();
         
-        x = v.x;
-        z = v.y;
+        horizontal = v.x;
+        forward = v.y;
     }
     
     public void Crouch(InputAction.CallbackContext context)
@@ -212,10 +213,10 @@ public class PlayerMovement : MonoBehaviour
             upwardsVelocity.y = 0f;
         }
 
-        bool movingForward = z > 0.9f && Math.Abs(x) < 0.3f;
+        bool movingForward = forward > 0.9f && Math.Abs(horizontal) < 0.3f;
         
         // No horizontal or vertical input
-        bool hasMovementInput = z != 0 || x != 0;
+        bool hasMovementInput = forward != 0 || horizontal != 0;
 
         float actualSpeed = speed;
 
@@ -232,8 +233,8 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // Move player according to x, z input and speed
-        Vector3 horizontalMove = transform.right * x;
-        Vector3 verticalMove = transform.forward * z;
+        Vector3 horizontalMove = transform.right * horizontal;
+        Vector3 verticalMove = transform.forward * forward;
         Vector3 move = horizontalMove + verticalMove;
         Vector3 motion = move * (actualSpeed * Time.deltaTime);
         
@@ -259,6 +260,7 @@ public class PlayerMovement : MonoBehaviour
             {
                 // Regular jump: Increase upwards velocity
                 upwardsVelocity.y = Mathf.Sqrt(jumpHeight * -2f * actualGravity);
+                
                 if (hasMovementInput)
                 {
                     forwardVelocity.x = move.x * actualSpeed * 0.8f;

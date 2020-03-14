@@ -20,15 +20,7 @@ public class MouseLook : MonoBehaviour
 
     public void Rotate(InputAction.CallbackContext context)
     {
-        switch (context.phase)
-        {
-            case InputActionPhase.Performed:
-                input = context.ReadValue<Vector2>();
-                break;
-            case InputActionPhase.Canceled:
-                input = Vector2.zero;
-                break;
-        }
+        input = context.ReadValue<Vector2>();
     }
 
     // Start is called before the first frame update

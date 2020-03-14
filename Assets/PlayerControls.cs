@@ -216,7 +216,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""db6efefe-b62a-4c45-96c2-753e9b1d9c83"",
+                    ""id"": ""53eaaef2-8e68-43ab-b184-c2056ba75aa5"",
                     ""path"": ""<Mouse>/delta"",
                     ""interactions"": """",
                     ""processors"": """",

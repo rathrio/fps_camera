@@ -42,6 +42,7 @@ public class PlayerMovement : MonoBehaviour
     
     bool holdingShift;
     bool holdingCrouch;
+    bool holdingJump;
     bool isCrouching;
 
     public bool IsGrounded { get; private set; }
@@ -75,7 +76,15 @@ public class PlayerMovement : MonoBehaviour
     
     public void Jump(InputAction.CallbackContext context)
     {
-        Debug.Log(context);
+        switch (context.phase)
+        {
+            case InputActionPhase.Performed:
+                holdingJump = true;
+                break;
+            case InputActionPhase.Canceled:
+                holdingJump = false;
+                break;
+        }
     }
     
     public void Sprint(InputAction.CallbackContext context)
@@ -154,8 +163,7 @@ public class PlayerMovement : MonoBehaviour
         // Is the camera intersecting with the ground layer? (Not super accurate, but does the job for the demo)
         HittingCeiling = Physics.CheckSphere(mainCamera.position, 1f, groundMask, QueryTriggerInteraction.Ignore);
 
-        bool pressedJump = Input.GetButtonDown("Jump");
-        bool holdingJump = Input.GetButton("Jump");
+        bool pressedJump = Gamepad.current.rightShoulder.wasPressedThisFrame;
 
         bool standingBlockedByCeiling = isCrouching && HittingCeiling && !holdingCrouch;
 
@@ -203,13 +211,7 @@ public class PlayerMovement : MonoBehaviour
             upwardsVelocity.y = 0f;
         }
 
-        // // A/D
-        // float x = Input.GetAxis("Horizontal");
-        //
-        // // W/S
-        // float z = Input.GetAxis("Vertical");
-
-        bool movingForward = z == 1 && Math.Abs(x) < 0.3f;
+        bool movingForward = z > 0.9f && Math.Abs(x) < 0.3f;
         
         // No horizontal or vertical input
         bool hasMovementInput = z != 0 || x != 0;

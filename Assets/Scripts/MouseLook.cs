@@ -10,11 +10,13 @@ public class MouseLook : MonoBehaviour
     /**
      * Rotation AROUND the x axis.
      */
-    float xRotation = 0f;
+    float xRotation;
+
+    Vector2 input;
 
     public void Rotate(InputAction.CallbackContext context)
     {
-        Debug.Log(context);
+        input = context.ReadValue<Vector2>();
     }
 
     // Start is called before the first frame update
@@ -28,8 +30,8 @@ public class MouseLook : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
-        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
+        float mouseX = input.x * mouseSensitivity * Time.deltaTime;
+        float mouseY = input.y * mouseSensitivity * Time.deltaTime;
 
         xRotation -= mouseY;
 

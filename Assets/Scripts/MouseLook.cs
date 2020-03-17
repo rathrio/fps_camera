@@ -5,11 +5,11 @@ using UnityEngine.InputSystem.Users;
 
 public class MouseLook : MonoBehaviour
 {
-    public float mouseSensitivity = 150f;
+    public float mouseSensitivity = 15;
 
     public Transform playerBody;
 
-    public PlayerInput playerInput;
+    public PlayerMovement movement;
 
     /**
      * Rotation AROUND the x axis.

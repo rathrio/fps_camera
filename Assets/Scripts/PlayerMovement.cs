@@ -44,8 +44,9 @@ public class PlayerMovement : MonoBehaviour
     bool holdingShift;
     bool holdingCrouch;
     bool holdingJump;
-    bool isCrouching;
-
+    
+    public bool IsCrouching { get; private set; }
+    public bool IsSprinting { get; private set; }
     public bool IsGrounded { get; private set; }
     public bool HittingCeiling { get; private set; }
     public bool HasDoubleJumped { get; private set; }
@@ -167,24 +168,24 @@ public class PlayerMovement : MonoBehaviour
         bool pressedJump = (Gamepad.current != null && Gamepad.current.rightShoulder.wasPressedThisFrame) ||
                            (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame);
 
-        bool standingBlockedByCeiling = isCrouching && HittingCeiling && !holdingCrouch;
+        bool standingBlockedByCeiling = IsCrouching && HittingCeiling && !holdingCrouch;
 
         float actualGravity = gravity * gravityMultiplier;
 
         // Crouching
-        if (holdingCrouch && !isCrouching)
+        if (holdingCrouch && !IsCrouching)
         {
             character.height = crouchingHeight;
             groundCheck.Translate(Vector3.up * groundCheckCrouchOffset);
-            isCrouching = true;
+            IsCrouching = true;
         }
 
         // Stand back up
-        if (!holdingCrouch && isCrouching && !HittingCeiling)
+        if (!holdingCrouch && IsCrouching && !HittingCeiling)
         {
             character.height = standingHeight;
             groundCheck.Translate(Vector3.down * groundCheckCrouchOffset);
-            isCrouching = false;
+            IsCrouching = false;
         }
 
         if (upwardsVelocity.y < groundedOffset)
@@ -221,13 +222,15 @@ public class PlayerMovement : MonoBehaviour
         float actualSpeed = speed;
 
         // Sprint speed
-        if (movingForward && (HasSprintJumped || (holdingShift && IsGrounded && !isCrouching)))
+        if (movingForward && (HasSprintJumped || (holdingShift && IsGrounded && !IsCrouching)))
         {
             actualSpeed *= sprintSpeedFactor;
+            IsSprinting = true;
         }
+        IsSprinting = false;
 
         // Decrease speed when crouching or when in the air after crouch jumping
-        if (isCrouching && IsGrounded || HasCrouchJumped)
+        if (IsCrouching && IsGrounded || HasCrouchJumped)
         {
             actualSpeed *= crouchSpeedFactor;
         }
@@ -270,7 +273,7 @@ public class PlayerMovement : MonoBehaviour
                 HasJumped = true;
                 
                 // Sprint jump
-                if (holdingShift && !isCrouching)
+                if (holdingShift && !IsCrouching)
                 {
                     upwardsVelocity.y *= 0.85f;
                     HasSprintJumped = true;
